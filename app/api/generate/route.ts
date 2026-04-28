@@ -10,6 +10,7 @@ const ai = new GoogleGenAI({
 
 async function fileToPart(file: File) {
   const buffer = Buffer.from(await file.arrayBuffer());
+
   return {
     inlineData: {
       mimeType: file.type,
@@ -36,11 +37,13 @@ export async function POST(req: NextRequest) {
     const targetShop = String(formData.get("targetShop") || "");
     const referenceShop = String(formData.get("referenceShop") || "");
     const forbiddenShop = String(formData.get("forbiddenShop") || "");
+    const aspectRatio = String(formData.get("aspectRatio") || "1:1");
 
     const prompt = buildPrompt({
       targetShop,
       referenceShop,
       forbiddenShop,
+      aspectRatio,
     });
 
     const response = await ai.models.generateContent({
@@ -58,6 +61,9 @@ export async function POST(req: NextRequest) {
       ],
       config: {
         responseModalities: ["IMAGE"],
+        imageConfig: {
+          aspectRatio,
+        },
       },
     });
 
@@ -78,6 +84,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error(err);
+
     return NextResponse.json(
       { error: "เกิดข้อผิดพลาดในระบบ Generate" },
       { status: 500 }

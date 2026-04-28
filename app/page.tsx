@@ -28,10 +28,16 @@ export default function Page() {
 
     ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
 
-    return new Promise<File>((resolve) => {
+    return new Promise<File>((resolve, reject) => {
       canvas.toBlob(
         (blob) => {
-          resolve(new File([blob!], file.name, { type: "image/jpeg" }));
+          if (!blob) return reject(new Error("compress failed"));
+
+          resolve(
+            new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+              type: "image/jpeg",
+            })
+          );
         },
         "image/jpeg",
         0.65
@@ -67,23 +73,39 @@ export default function Page() {
       return;
     }
 
-    const formData = new FormData();
-
-    const [img1, img2, img3] = await Promise.all([
-      compressImage(image1),
-      compressImage(image2),
-      compressImage(image3),
-    ]);
-
-    formData.append("image1", img1);
-    formData.append("image2", img2);
-    formData.append("image3", img3);
-
-    formData.append("targetShop", (form.elements.namedItem("targetShop") as HTMLInputElement).value);
-    formData.append("referenceShop", (form.elements.namedItem("referenceShop") as HTMLInputElement).value);
-    formData.append("forbiddenShop", (form.elements.namedItem("forbiddenShop") as HTMLInputElement).value);
-
     try {
+      const formData = new FormData();
+
+      const [img1, img2, img3] = await Promise.all([
+        compressImage(image1),
+        compressImage(image2),
+        compressImage(image3),
+      ]);
+
+      formData.append("image1", img1);
+      formData.append("image2", img2);
+      formData.append("image3", img3);
+
+      formData.append(
+        "targetShop",
+        (form.elements.namedItem("targetShop") as HTMLInputElement).value
+      );
+
+      formData.append(
+        "referenceShop",
+        (form.elements.namedItem("referenceShop") as HTMLInputElement).value
+      );
+
+      formData.append(
+        "forbiddenShop",
+        (form.elements.namedItem("forbiddenShop") as HTMLInputElement).value
+      );
+
+      formData.append(
+        "aspectRatio",
+        (form.elements.namedItem("aspectRatio") as HTMLSelectElement).value
+      );
+
       const res = await fetch("/api/generate", {
         method: "POST",
         body: formData,
@@ -97,10 +119,10 @@ export default function Page() {
         alert(data.error || "เกิดข้อผิดพลาด");
       }
     } catch {
-      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
@@ -156,17 +178,52 @@ export default function Page() {
             </div>
 
             <div className="mt-6 space-y-4">
-              <TextInput name="targetShop" label="ชื่อร้านของเรา" placeholder="เช่น SUPERSIX" />
-              <TextInput name="referenceShop" label="ร้านอ้างอิง Layout" placeholder="เช่น FATCAT STORE" />
-              <TextInput name="forbiddenShop" label="ร้านที่ห้ามใช้ UI" placeholder="เช่น FATCAT STORE" />
+              <TextInput
+                name="targetShop"
+                label="ชื่อร้านของเรา"
+                placeholder="เช่น SUPERSIX"
+              />
+
+              <TextInput
+                name="referenceShop"
+                label="ร้านอ้างอิง Layout"
+                placeholder="เช่น FATCAT STORE"
+              />
+
+              <TextInput
+                name="forbiddenShop"
+                label="ร้านที่ห้ามใช้ UI"
+                placeholder="เช่น FATCAT STORE"
+              />
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-white/60">
+                  ขนาดภาพ
+                </span>
+
+                <select
+                  name="aspectRatio"
+                  required
+                  defaultValue="1:1"
+                  className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-white/40"
+                >
+                  <option value="1:1">1:1 — Square Post</option>
+                  <option value="4:5">4:5 — Facebook / IG Portrait</option>
+                  <option value="16:9">16:9 — Wide Banner</option>
+                </select>
+              </label>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="mt-6 w-full rounded-2xl bg-white px-5 py-4 font-bold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-4 font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "กำลังสร้างภาพ..." : "Generate Poster"}
+              {loading && (
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              )}
+
+              {loading ? "AI กำลังสร้างภาพ..." : "Generate Poster"}
             </button>
 
             {loading && (
@@ -179,6 +236,7 @@ export default function Page() {
           <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-xl font-bold">ผลลัพธ์</h2>
+
               {result && (
                 <a
                   href={result}
@@ -197,16 +255,22 @@ export default function Page() {
                   alt="Generated promo"
                   className="h-full w-full object-contain"
                 />
+              ) : loading ? (
+                <div className="px-8 text-center">
+                  <div className="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-white" />
+
+                  <p className="text-lg font-bold text-white">
+                    AI กำลังสร้างภาพ
+                  </p>
+
+                  <p className="mt-2 text-sm text-white/40">
+                    กำลังจัดวาง layout, item, ราคา และ UI ตามภาพอ้างอิง
+                  </p>
+                </div>
               ) : (
                 <div className="px-8 text-center text-white/40">
-                  {loading ? (
-                    <div>
-                      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-white" />
-                      <p>AI กำลังสร้างภาพ...</p>
-                    </div>
-                  ) : (
-                    <p>ภาพที่สร้างจะปรากฏตรงนี้</p>
-                  )}
+                  <div className="mb-4 text-5xl">🎮</div>
+                  <p>ภาพที่สร้างจะปรากฏตรงนี้</p>
                 </div>
               )}
             </div>
@@ -231,13 +295,13 @@ function UploadBox({
   onChange: (file?: File) => void;
 }) {
   return (
-    <label className="group cursor-pointer rounded-2xl border border-white/10 bg-black/30 p-4 transition hover:border-white/30">
+    <label className="group cursor-pointer rounded-2xl border border-white/10 bg-black/30 p-4 transition hover:border-white/30 hover:bg-white/[0.06]">
       <div className="flex items-center gap-4">
         <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-white/5">
           {preview ? (
             <img src={preview} className="h-full w-full object-cover" alt="" />
           ) : (
-            <span className="text-2xl">＋</span>
+            <span className="text-2xl opacity-50">＋</span>
           )}
         </div>
 
@@ -271,7 +335,10 @@ function TextInput({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-white/60">{label}</span>
+      <span className="mb-2 block text-sm font-medium text-white/60">
+        {label}
+      </span>
+
       <input
         name={name}
         required

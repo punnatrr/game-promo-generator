@@ -2,27 +2,44 @@ export function buildPrompt({
   targetShop,
   referenceShop,
   forbiddenShop,
+  aspectRatio,
 }: {
   targetShop: string;
   referenceShop: string;
   forbiddenShop: string;
+  aspectRatio: string;
 }) {
   return `
-สร้างโพสต์โปรโมทราคาไอเทมเกมแบบมืออาชีพ
+คุณคือ AI นักออกแบบโปสเตอร์เกมมืออาชีพ
 
-INPUT:
-- ภาพที่ 1: background
-- ภาพที่ 2: ราคา + ไอเทม
-- ภาพที่ 3: layout reference
+หน้าที่ของคุณ:
+สร้าง "โปสเตอร์โปรโมทเกม" ที่ดู premium และเหมือนโฆษณาจริง
 
-RULES:
-1. ใช้ราคาและไอเทมจากภาพที่ 2 เท่านั้น
-2. ใช้ background จากภาพที่ 1
-3. layout อ้างอิงจาก ${referenceShop}
-4. ใช้ CI/UI ของ ${targetShop} เท่านั้น
-5. ห้ามใช้ UI ของ ${forbiddenShop}
-6. ห้ามเปลี่ยนราคา
-7. ทำให้ดู premium อ่านง่าย
-8. ขนาด 1:1
+ข้อมูล:
+- ร้านของเรา: ${targetShop}
+- อ้างอิงสไตล์จาก: ${referenceShop}
+- ห้ามเหมือน: ${forbiddenShop}
+
+กติกาสำคัญ:
+1. ใช้ภาพที่ให้มาเป็น reference เท่านั้น (ห้าม copy ตรง ๆ)
+2. ต้องดูเป็น "งานโฆษณาจริง"
+3. โทนภาพ cinematic / dramatic / high contrast
+4. มี lighting สวย ๆ (rim light / glow / depth)
+5. มี composition ที่ดี (subject ชัด / focus ชัด)
+6. ใส่ text เล็กน้อย เช่น:
+   - ชื่อร้าน
+   - tagline สั้น ๆ
+7. ห้ามรก / ห้ามใส่ text เยอะ
+8. สร้างภาพในอัตราส่วน ${aspectRatio}
+9. คุณภาพสูง ระดับ marketing / banner / ads
+
+สไตล์:
+- modern game marketing
+- premium
+- cinematic lighting
+- dramatic contrast
+- depth of field
+
+ผลลัพธ์ต้องเป็น "ภาพโปสเตอร์เดียว" ที่ดูพร้อมใช้งานทันที
 `;
 }
