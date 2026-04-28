@@ -9,7 +9,7 @@ async function compressImage(file: File) {
   const bitmap = await createImageBitmap(file);
   const canvas = document.createElement("canvas");
 
-  const maxSize = 256;
+  const maxSize = 384;
   const scale = Math.min(maxSize / bitmap.width, maxSize / bitmap.height, 1);
 
   canvas.width = Math.round(bitmap.width * scale);
@@ -26,7 +26,7 @@ async function compressImage(file: File) {
         resolve(new File([blob!], file.name, { type: "image/jpeg" }));
       },
       "image/jpeg",
-      0.5
+      0.65
     );
   });
 }
