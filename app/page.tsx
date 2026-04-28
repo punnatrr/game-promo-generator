@@ -5,13 +5,57 @@ import { useState } from "react";
 export default function Page() {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+async function compressImage(file: File) {
+  const bitmap = await createImageBitmap(file);
+  const canvas = document.createElement("canvas");
 
+  const maxSize = 256;
+  const scale = Math.min(maxSize / bitmap.width, maxSize / bitmap.height, 1);
+
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("compress error");
+
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+  return new Promise<File>((resolve) => {
+    canvas.toBlob(
+      (blob) => {
+        resolve(new File([blob!], file.name, { type: "image/jpeg" }));
+      },
+      "image/jpeg",
+      0.5
+    );
+  });
+}
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setResult(null);
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+
+const image1 = (form.elements.namedItem("image1") as HTMLInputElement).files?.[0];
+const image2 = (form.elements.namedItem("image2") as HTMLInputElement).files?.[0];
+const image3 = (form.elements.namedItem("image3") as HTMLInputElement).files?.[0];
+
+if (!image1 || !image2 || !image3) {
+  alert("กรุณาอัปโหลดภาพให้ครบ");
+  setLoading(false);
+  return;
+}
+
+const formData = new FormData();
+
+formData.append("image1", await compressImage(image1));
+formData.append("image2", await compressImage(image2));
+formData.append("image3", await compressImage(image3));
+
+formData.append("targetShop", (form.elements.namedItem("targetShop") as HTMLInputElement).value);
+formData.append("referenceShop", (form.elements.namedItem("referenceShop") as HTMLInputElement).value);
+formData.append("forbiddenShop", (form.elements.namedItem("forbiddenShop") as HTMLInputElement).value);
 
     const res = await fetch("/api/generate", {
       method: "POST",
