@@ -8,7 +8,13 @@ export default function Page() {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [refining, setRefining] = useState(false);
+
   const [editInstruction, setEditInstruction] = useState("");
+
+  const [targetShop, setTargetShop] = useState("");
+  const [referenceShop, setReferenceShop] = useState("");
+  const [forbiddenShop, setForbiddenShop] = useState("");
+  const [aspectRatio, setAspectRatio] = useState("1:1");
 
   const [previews, setPreviews] = useState<Record<ImageSlot, string | null>>({
     image1: null,
@@ -70,6 +76,7 @@ export default function Page() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     setLoading(true);
     setResult(null);
 
@@ -91,38 +98,24 @@ export default function Page() {
     }
 
     try {
-      const formData = new FormData();
-
       const [img1, img2, img3] = await Promise.all([
         compressImage(image1),
         compressImage(image2),
         compressImage(image3),
       ]);
 
+      const formData = new FormData();
+
       formData.append("mode", "generate");
+
       formData.append("image1", img1);
       formData.append("image2", img2);
       formData.append("image3", img3);
 
-      formData.append(
-        "targetShop",
-        (form.elements.namedItem("targetShop") as HTMLInputElement).value
-      );
-
-      formData.append(
-        "referenceShop",
-        (form.elements.namedItem("referenceShop") as HTMLInputElement).value
-      );
-
-      formData.append(
-        "forbiddenShop",
-        (form.elements.namedItem("forbiddenShop") as HTMLInputElement).value
-      );
-
-      formData.append(
-        "aspectRatio",
-        (form.elements.namedItem("aspectRatio") as HTMLSelectElement).value
-      );
+      formData.append("targetShop", targetShop);
+      formData.append("referenceShop", referenceShop);
+      formData.append("forbiddenShop", forbiddenShop);
+      formData.append("aspectRatio", aspectRatio);
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -137,7 +130,8 @@ export default function Page() {
       } else {
         alert(data.error || "เกิดข้อผิดพลาด");
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
     } finally {
       setLoading(false);
@@ -169,6 +163,12 @@ export default function Page() {
       formData.append("generatedImage", generatedImage);
       formData.append("editInstruction", editInstruction.trim());
 
+      // ส่ง context เดิมกลับไปด้วย เพื่อไม่ให้ AI หลุดโจทย์เดิม
+      formData.append("targetShop", targetShop);
+      formData.append("referenceShop", referenceShop);
+      formData.append("forbiddenShop", forbiddenShop);
+      formData.append("aspectRatio", aspectRatio);
+
       const res = await fetch("/api/generate", {
         method: "POST",
         body: formData,
@@ -182,7 +182,8 @@ export default function Page() {
       } else {
         alert(data.error || "แก้ไขภาพไม่สำเร็จ");
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       alert("เกิดข้อผิดพลาดระหว่างแก้ไขภาพ");
     } finally {
       setRefining(false);
@@ -248,18 +249,24 @@ export default function Page() {
                 name="targetShop"
                 label="ชื่อร้านของเรา"
                 placeholder="เช่น SUPERSIX"
+                value={targetShop}
+                onChange={setTargetShop}
               />
 
               <TextInput
                 name="referenceShop"
                 label="ร้านอ้างอิง Layout"
                 placeholder="เช่น FATCAT STORE"
+                value={referenceShop}
+                onChange={setReferenceShop}
               />
 
               <TextInput
                 name="forbiddenShop"
                 label="ร้านที่ห้ามใช้ UI"
                 placeholder="เช่น FATCAT STORE"
+                value={forbiddenShop}
+                onChange={setForbiddenShop}
               />
 
               <label className="block">
@@ -270,7 +277,8 @@ export default function Page() {
                 <select
                   name="aspectRatio"
                   required
-                  defaultValue="1:1"
+                  value={aspectRatio}
+                  onChange={(e) => setAspectRatio(e.target.value)}
                   className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-white/40"
                 >
                   <option value="1:1">1:1 — Square Post</option>
@@ -432,10 +440,14 @@ function TextInput({
   name,
   label,
   placeholder,
+  value,
+  onChange,
 }: {
   name: string;
   label: string;
   placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
 }) {
   return (
     <label className="block">
@@ -446,6 +458,8 @@ function TextInput({
       <input
         name={name}
         required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition placeholder:text-white/25 focus:border-white/40"
       />

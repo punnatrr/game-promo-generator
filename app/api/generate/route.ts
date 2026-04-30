@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { buildPrompt } from "@/lib/prompt";
+import { buildPrompt, buildRefinePrompt } from "@/lib/prompt";
+
 
 export const maxDuration = 60;
 
@@ -37,22 +38,7 @@ function normalizeAspectRatio(value: string) {
   return allowed.includes(value) ? value : "1:1";
 }
 
-function buildRefinePrompt(editInstruction: string) {
-  return `
-You are editing an existing AI-generated game promotion poster.
 
-TASK:
-- Keep the original poster concept, product/game context, and overall composition as much as possible.
-- Apply the user's requested edits carefully.
-- Preserve the main subject, main layout direction, and the readable structure unless the user asks to change them.
-- Improve visual consistency, typography balance, and overall polish.
-- If the user asks to fix pack pricing / pricing cards / UI elements, make them more cohesive and visually aligned with the poster's CI.
-- Do not completely redesign the whole poster unless explicitly requested.
-
-USER EDIT REQUEST:
-${editInstruction}
-`.trim();
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -88,7 +74,15 @@ export async function POST(req: NextRequest) {
           {
             role: "user",
             parts: [
-              { text: buildRefinePrompt(editInstruction) },
+              {
+                text: buildRefinePrompt({
+                  editInstruction,
+                  targetShop: String(formData.get("targetShop") || ""),
+                  referenceShop: String(formData.get("referenceShop") || ""),
+                  forbiddenShop: String(formData.get("forbiddenShop") || ""),
+                  aspectRatio: String(formData.get("aspectRatio") || ""),
+                }),
+              },
               await fileToPart(generatedImage),
             ],
           },
