@@ -7,6 +7,9 @@ type ImageSlot = "image1" | "image2" | "image3";
 export default function Page() {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refining, setRefining] = useState(false);
+  const [editInstruction, setEditInstruction] = useState("");
+
   const [previews, setPreviews] = useState<Record<ImageSlot, string | null>>({
     image1: null,
     image2: null,
@@ -45,6 +48,15 @@ export default function Page() {
     });
   }
 
+  async function dataUrlToFile(dataUrl: string, filename: string) {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+
+    return new File([blob], filename, {
+      type: blob.type || "image/png",
+    });
+  }
+
   function handlePreview(slot: ImageSlot, file?: File) {
     if (!file) return;
 
@@ -63,9 +75,14 @@ export default function Page() {
 
     const form = e.currentTarget;
 
-    const image1 = (form.elements.namedItem("image1") as HTMLInputElement).files?.[0];
-    const image2 = (form.elements.namedItem("image2") as HTMLInputElement).files?.[0];
-    const image3 = (form.elements.namedItem("image3") as HTMLInputElement).files?.[0];
+    const image1 = (form.elements.namedItem("image1") as HTMLInputElement)
+      .files?.[0];
+
+    const image2 = (form.elements.namedItem("image2") as HTMLInputElement)
+      .files?.[0];
+
+    const image3 = (form.elements.namedItem("image3") as HTMLInputElement)
+      .files?.[0];
 
     if (!image1 || !image2 || !image3) {
       alert("กรุณาอัปโหลดภาพให้ครบ 3 ภาพ");
@@ -82,6 +99,7 @@ export default function Page() {
         compressImage(image3),
       ]);
 
+      formData.append("mode", "generate");
       formData.append("image1", img1);
       formData.append("image2", img2);
       formData.append("image3", img3);
@@ -115,6 +133,7 @@ export default function Page() {
 
       if (data.image) {
         setResult(data.image);
+        setEditInstruction("");
       } else {
         alert(data.error || "เกิดข้อผิดพลาด");
       }
@@ -124,6 +143,53 @@ export default function Page() {
       setLoading(false);
     }
   }
+
+  async function handleRefine() {
+    if (!result) {
+      alert("ยังไม่มีภาพให้แก้ไข");
+      return;
+    }
+
+    if (!editInstruction.trim()) {
+      alert("กรุณาพิมพ์คำสั่งที่ต้องการแก้ไข");
+      return;
+    }
+
+    setRefining(true);
+
+    try {
+      const generatedImage = await dataUrlToFile(
+        result,
+        "generated-image.png"
+      );
+
+      const formData = new FormData();
+
+      formData.append("mode", "refine");
+      formData.append("generatedImage", generatedImage);
+      formData.append("editInstruction", editInstruction.trim());
+
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.image) {
+        setResult(data.image);
+        setEditInstruction("");
+      } else {
+        alert(data.error || "แก้ไขภาพไม่สำเร็จ");
+      }
+    } catch {
+      alert("เกิดข้อผิดพลาดระหว่างแก้ไขภาพ");
+    } finally {
+      setRefining(false);
+    }
+  }
+
+  const busy = loading || refining;
 
   return (
     <main className="min-h-screen bg-[#050505] text-white">
@@ -216,7 +282,7 @@ export default function Page() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={busy}
               className="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-4 font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading && (
@@ -274,6 +340,44 @@ export default function Page() {
                 </div>
               )}
             </div>
+
+            {result && (
+              <div className="mt-5 rounded-2xl border border-white/10 bg-black/30 p-4">
+                <h3 className="font-bold">แก้ไขภาพนี้เพิ่มเติม</h3>
+
+                <p className="mt-1 text-sm text-white/40">
+                  พิมพ์สิ่งที่อยากให้ AI ปรับจากภาพผลลัพธ์ล่าสุด
+                </p>
+
+                <textarea
+                  value={editInstruction}
+                  onChange={(e) => setEditInstruction(e.target.value)}
+                  disabled={busy}
+                  rows={4}
+                  placeholder="เช่น ทำแพ็คราคาให้เข้ากับ CI ร้านมากขึ้น, เพิ่มราคาตัวใหญ่ขึ้น, ลดความรก, เปลี่ยนโทนเป็นทองดำ"
+                  className="mt-4 w-full resize-none rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm outline-none transition placeholder:text-white/25 focus:border-white/40 disabled:opacity-60"
+                />
+
+                <button
+                  type="button"
+                  disabled={busy || !editInstruction.trim()}
+                  onClick={handleRefine}
+                  className="mt-3 flex w-full items-center justify-center gap-3 rounded-2xl bg-emerald-400 px-5 py-4 font-bold text-black transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {refining && (
+                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-black/20 border-t-black" />
+                  )}
+
+                  {refining ? "AI กำลังแก้ไขภาพ..." : "แก้ไขภาพนี้"}
+                </button>
+
+                {refining && (
+                  <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-100">
+                    กำลังส่งภาพผลลัพธ์เดิมกลับไปให้ AI ปรับแก้ตามคำสั่งของคุณ
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
