@@ -1,11 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/app/components/ui/button";
+import { FileUpload } from "@/app/components/ui/file-upload";
+import { RadioGroup } from "@/app/components/ui/radio-group";
+import { SelectField } from "@/app/components/ui/select-field";
+import { Spinner } from "@/app/components/ui/spinner";
+import { StatusMessage } from "@/app/components/ui/status-message";
+import { TextareaField } from "@/app/components/ui/textarea-field";
+import { TextField } from "@/app/components/ui/text-field";
+import { compressImage, dataUrlToFile } from "@/lib/client/images";
+import type {
+  AspectRatio,
+  ImageModel,
+  ImageQuality,
+} from "@/lib/generation/config";
 
 type ImageSlot = "image1" | "image2" | "image3";
 
+const IMAGE_SIZE_OPTIONS = [
+  { value: "1:1", label: "สี่เหลี่ยมจัตุรัส", description: "1:1" },
+  { value: "3:4", label: "แนวตั้ง", description: "3:4" },
+  { value: "4:5", label: "Facebook แนวตั้ง", description: "4:5" },
+  { value: "9:16", label: "สตอรี่", description: "9:16" },
+  { value: "4:3", label: "แนวนอน", description: "4:3" },
+  { value: "16:9", label: "จอกว้าง", description: "16:9" },
+] as const;
+
+const AI_MODEL_OPTIONS = [
+  { value: "gpt-image-1.5", label: "GPT Image 1.5 — balanced cost/quality" },
+  { value: "gpt-image-2", label: "GPT Image 2 — highest quality" },
+  { value: "gemini-3-pro-image-preview", label: "Gemini 3 Pro Image — old provider" },
+] as const;
+
+const IMAGE_QUALITY_OPTIONS = [
+  { value: "low", label: "Low — cheapest draft" },
+  { value: "medium", label: "Medium — recommended" },
+  { value: "high", label: "High — final artwork" },
+] as const;
+
 export default function Page() {
   const [result, setResult] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [refining, setRefining] = useState(false);
 
@@ -14,7 +51,9 @@ export default function Page() {
   const [targetShop, setTargetShop] = useState("");
   const [referenceShop, setReferenceShop] = useState("");
   const [forbiddenShop, setForbiddenShop] = useState("");
-  const [aspectRatio, setAspectRatio] = useState("1:1");
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("3:4");
+  const [aiModel, setAiModel] = useState<ImageModel>("gpt-image-1.5");
+  const [imageQuality, setImageQuality] = useState<ImageQuality>("medium");
 
   const [previews, setPreviews] = useState<Record<ImageSlot, string | null>>({
     image1: null,
@@ -22,56 +61,28 @@ export default function Page() {
     image3: null,
   });
 
-  async function compressImage(file: File) {
-    const bitmap = await createImageBitmap(file);
-    const canvas = document.createElement("canvas");
+  const previewUrls = useRef(new Set<string>());
 
-    const maxSize = 384;
-    const scale = Math.min(maxSize / bitmap.width, maxSize / bitmap.height, 1);
-
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("compress error");
-
-    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-
-    return new Promise<File>((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) return reject(new Error("compress failed"));
-
-          resolve(
-            new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
-              type: "image/jpeg",
-            })
-          );
-        },
-        "image/jpeg",
-        0.65
-      );
-    });
-  }
-
-  async function dataUrlToFile(dataUrl: string, filename: string) {
-    const res = await fetch(dataUrl);
-    const blob = await res.blob();
-
-    return new File([blob], filename, {
-      type: blob.type || "image/png",
-    });
-  }
+  useEffect(() => {
+    const urls = previewUrls.current;
+    return () => urls.forEach(URL.revokeObjectURL);
+  }, []);
 
   function handlePreview(slot: ImageSlot, file?: File) {
     if (!file) return;
 
     const url = URL.createObjectURL(file);
+    previewUrls.current.add(url);
 
-    setPreviews((prev) => ({
-      ...prev,
-      [slot]: url,
-    }));
+    setPreviews((previous) => {
+      const oldUrl = previous[slot];
+      if (oldUrl) {
+        URL.revokeObjectURL(oldUrl);
+        previewUrls.current.delete(oldUrl);
+      }
+
+      return { ...previous, [slot]: url };
+    });
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -79,6 +90,7 @@ export default function Page() {
 
     setLoading(true);
     setResult(null);
+    setErrorMessage(null);
 
     const form = e.currentTarget;
 
@@ -91,17 +103,36 @@ export default function Page() {
     const image3 = (form.elements.namedItem("image3") as HTMLInputElement)
       .files?.[0];
 
+    if (!targetShop.trim()) {
+      setErrorMessage("กรุณากรอกชื่อร้านของเรา");
+      setLoading(false);
+      return;
+    }
+
+    if (!referenceShop.trim()) {
+      setErrorMessage("กรุณากรอกร้านอ้างอิง Layout");
+      setLoading(false);
+      return;
+    }
+
+    if (!forbiddenShop.trim()) {
+      setErrorMessage("กรุณากรอกร้านที่ห้ามใช้ UI");
+      setLoading(false);
+      return;
+    }
+
     if (!image1 || !image2 || !image3) {
-      alert("กรุณาอัปโหลดภาพให้ครบ 3 ภาพ");
+      setErrorMessage("กรุณาอัปโหลดภาพให้ครบ 3 ภาพ");
       setLoading(false);
       return;
     }
 
     try {
+      const referenceMaxSize = imageQuality === "low" ? 384 : 768;
       const [img1, img2, img3] = await Promise.all([
-        compressImage(image1),
-        compressImage(image2),
-        compressImage(image3),
+        compressImage(image1, referenceMaxSize),
+        compressImage(image2, referenceMaxSize),
+        compressImage(image3, referenceMaxSize),
       ]);
 
       const formData = new FormData();
@@ -116,6 +147,8 @@ export default function Page() {
       formData.append("referenceShop", referenceShop);
       formData.append("forbiddenShop", forbiddenShop);
       formData.append("aspectRatio", aspectRatio);
+      formData.append("aiModel", aiModel);
+      formData.append("imageQuality", imageQuality);
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -127,12 +160,13 @@ export default function Page() {
       if (data.image) {
         setResult(data.image);
         setEditInstruction("");
+        setErrorMessage(null);
       } else {
-        alert(data.error || "เกิดข้อผิดพลาด");
+        setErrorMessage(data.error || "เกิดข้อผิดพลาด");
       }
     } catch (error) {
       console.error(error);
-      alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      setErrorMessage("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
     } finally {
       setLoading(false);
     }
@@ -140,16 +174,17 @@ export default function Page() {
 
   async function handleRefine() {
     if (!result) {
-      alert("ยังไม่มีภาพให้แก้ไข");
+      setErrorMessage("ยังไม่มีภาพให้แก้ไข");
       return;
     }
 
     if (!editInstruction.trim()) {
-      alert("กรุณาพิมพ์คำสั่งที่ต้องการแก้ไข");
+      setErrorMessage("กรุณาพิมพ์คำสั่งที่ต้องการแก้ไข");
       return;
     }
 
     setRefining(true);
+    setErrorMessage(null);
 
     try {
       const generatedImage = await dataUrlToFile(
@@ -168,6 +203,8 @@ export default function Page() {
       formData.append("referenceShop", referenceShop);
       formData.append("forbiddenShop", forbiddenShop);
       formData.append("aspectRatio", aspectRatio);
+      formData.append("aiModel", aiModel);
+      formData.append("imageQuality", imageQuality);
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -179,18 +216,27 @@ export default function Page() {
       if (data.image) {
         setResult(data.image);
         setEditInstruction("");
+        setErrorMessage(null);
       } else {
-        alert(data.error || "แก้ไขภาพไม่สำเร็จ");
+        setErrorMessage(data.error || "แก้ไขภาพไม่สำเร็จ");
       }
     } catch (error) {
       console.error(error);
-      alert("เกิดข้อผิดพลาดระหว่างแก้ไขภาพ");
+      setErrorMessage("เกิดข้อผิดพลาดระหว่างแก้ไขภาพ");
     } finally {
       setRefining(false);
     }
   }
 
   const busy = loading || refining;
+  const previewAspectClass: Record<AspectRatio, string> = {
+    "1:1": "aspect-square",
+    "3:4": "aspect-[3/4]",
+    "4:5": "aspect-[4/5]",
+    "9:16": "aspect-[9/16]",
+    "4:3": "aspect-[4/3]",
+    "16:9": "aspect-video",
+  };
 
   return (
     <main className="min-h-screen bg-[#050505] text-white">
@@ -209,129 +255,174 @@ export default function Page() {
           </p>
         </div>
 
+        {errorMessage && (
+          <StatusMessage tone="error" title="ดำเนินการไม่สำเร็จ" className="mb-6">
+            {errorMessage}
+          </StatusMessage>
+        )}
+
         <div className="grid gap-8 lg:grid-cols-2">
           <form
             onSubmit={handleSubmit}
             method="post"
             encType="multipart/form-data"
-            className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl"
+            aria-busy={loading}
+            className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl sm:p-6"
           >
             <h2 className="mb-5 text-xl font-bold">ตั้งค่าภาพโปรโมท</h2>
 
             <div className="grid gap-4">
-              <UploadBox
-                title="ภาพที่ 1"
-                desc="Background / Main Visual"
+              <FileUpload
+                label="ภาพที่ 1"
+                description="Background / Main Visual"
                 name="image1"
-                preview={previews.image1}
-                onChange={(file) => handlePreview("image1", file)}
+                previewUrl={previews.image1}
+                required
+                disabled={busy}
+                maxSizeBytes={25 * 1024 * 1024}
+                onRejected={setErrorMessage}
+                onFileChange={(file) => handlePreview("image1", file)}
               />
 
-              <UploadBox
-                title="ภาพที่ 2"
-                desc="ราคาแพ็ค + รูปไอเทม"
+              <FileUpload
+                label="ภาพที่ 2"
+                description="ราคาแพ็ค + รูปไอเทม"
                 name="image2"
-                preview={previews.image2}
-                onChange={(file) => handlePreview("image2", file)}
+                previewUrl={previews.image2}
+                required
+                disabled={busy}
+                maxSizeBytes={25 * 1024 * 1024}
+                onRejected={setErrorMessage}
+                onFileChange={(file) => handlePreview("image2", file)}
               />
 
-              <UploadBox
-                title="ภาพที่ 3"
-                desc="Layout / CI / UI Reference"
+              <FileUpload
+                label="ภาพที่ 3"
+                description="Layout / CI / UI Reference"
                 name="image3"
-                preview={previews.image3}
-                onChange={(file) => handlePreview("image3", file)}
+                previewUrl={previews.image3}
+                required
+                disabled={busy}
+                maxSizeBytes={25 * 1024 * 1024}
+                onRejected={setErrorMessage}
+                onFileChange={(file) => handlePreview("image3", file)}
               />
             </div>
 
             <div className="mt-6 space-y-4">
-              <TextInput
+              <TextField
                 name="targetShop"
                 label="ชื่อร้านของเรา"
                 placeholder="เช่น SUPERSIX"
                 value={targetShop}
-                onChange={setTargetShop}
+                required
+                disabled={busy}
+                onChange={(event) => setTargetShop(event.target.value)}
               />
 
-              <TextInput
+              <TextField
                 name="referenceShop"
                 label="ร้านอ้างอิง Layout"
                 placeholder="เช่น FATCAT STORE"
                 value={referenceShop}
-                onChange={setReferenceShop}
+                required
+                disabled={busy}
+                onChange={(event) => setReferenceShop(event.target.value)}
               />
 
-              <TextInput
+              <TextField
                 name="forbiddenShop"
                 label="ร้านที่ห้ามใช้ UI"
                 placeholder="เช่น FATCAT STORE"
                 value={forbiddenShop}
-                onChange={setForbiddenShop}
+                required
+                disabled={busy}
+                onChange={(event) => setForbiddenShop(event.target.value)}
               />
 
-              <label className="block">
-                <span className="mb-2 block text-sm font-medium text-white/60">
-                  ขนาดภาพ
-                </span>
+              <RadioGroup
+                name="aspectRatio"
+                label="ขนาดภาพ"
+                value={aspectRatio}
+                options={IMAGE_SIZE_OPTIONS}
+                required
+                disabled={busy}
+                onValueChange={setAspectRatio}
+              />
 
-                <select
-                  name="aspectRatio"
-                  required
-                  value={aspectRatio}
-                  onChange={(e) => setAspectRatio(e.target.value)}
-                  className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-white/40"
-                >
-                  <option value="1:1">1:1 — Square Post</option>
-                  <option value="4:5">4:5 — Facebook / IG Portrait</option>
-                  <option value="16:9">16:9 — Wide Banner</option>
-                </select>
-              </label>
+              <SelectField
+                name="aiModel"
+                label="AI model"
+                value={aiModel}
+                options={AI_MODEL_OPTIONS}
+                required
+                disabled={busy}
+                onValueChange={setAiModel}
+              />
+
+              <SelectField
+                name="imageQuality"
+                label="Image quality"
+                value={imageQuality}
+                options={IMAGE_QUALITY_OPTIONS}
+                required
+                disabled={busy}
+                onValueChange={setImageQuality}
+              />
             </div>
 
-            <button
+            <Button
               type="submit"
+              loading={loading}
+              loadingLabel="AI กำลังสร้างภาพ..."
               disabled={busy}
-              className="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 px-5 py-4 font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              fullWidth
+              className="mt-6"
             >
-              {loading && (
-                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              )}
-
-              {loading ? "AI กำลังสร้างภาพ..." : "Generate Poster"}
-            </button>
+              Generate Poster
+            </Button>
 
             {loading && (
-              <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-4 text-sm text-yellow-100">
+              <StatusMessage tone="loading" className="mt-4">
                 กำลังประมวลผลภาพ อาจใช้เวลาประมาณ 30–90 วินาที กรุณาอย่าปิดหน้านี้
-              </div>
+              </StatusMessage>
             )}
           </form>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-xl font-bold">ผลลัพธ์</h2>
+          <section
+            aria-labelledby="result-heading"
+            aria-busy={busy}
+            className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl sm:p-6"
+          >
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <h2 id="result-heading" className="text-xl font-bold">ผลลัพธ์</h2>
 
               {result && (
                 <a
                   href={result}
                   download="game-promo.png"
-                  className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-bold text-black"
+                  className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-bold text-black transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                 >
                   Download
                 </a>
               )}
             </div>
 
-            <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/40">
+            <div
+              className={`relative flex ${previewAspectClass[aspectRatio]} items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/40`}
+            >
               {result ? (
-                <img
+                <Image
                   src={result}
                   alt="Generated promo"
-                  className="h-full w-full object-contain"
+                  fill
+                  unoptimized
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-contain"
                 />
               ) : loading ? (
-                <div className="px-8 text-center">
-                  <div className="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-white" />
+                <div className="px-4 text-center sm:px-8" role="status" aria-live="polite">
+                  <Spinner className="mb-5 h-14 w-14 border-4" />
 
                   <p className="text-lg font-bold text-white">
                     AI กำลังสร้างภาพ
@@ -342,8 +433,8 @@ export default function Page() {
                   </p>
                 </div>
               ) : (
-                <div className="px-8 text-center text-white/40">
-                  <div className="mb-4 text-5xl">🎮</div>
+                <div className="px-4 text-center text-white/40 sm:px-8">
+                  <div className="mb-4 text-5xl" aria-hidden="true">🎮</div>
                   <p>ภาพที่สร้างจะปรากฏตรงนี้</p>
                 </div>
               )}
@@ -351,118 +442,39 @@ export default function Page() {
 
             {result && (
               <div className="mt-5 rounded-2xl border border-white/10 bg-black/30 p-4">
-                <h3 className="font-bold">แก้ไขภาพนี้เพิ่มเติม</h3>
-
-                <p className="mt-1 text-sm text-white/40">
-                  พิมพ์สิ่งที่อยากให้ AI ปรับจากภาพผลลัพธ์ล่าสุด
-                </p>
-
-                <textarea
+                <TextareaField
+                  label="แก้ไขภาพนี้เพิ่มเติม"
+                  hint="พิมพ์สิ่งที่อยากให้ AI ปรับจากภาพผลลัพธ์ล่าสุด"
                   value={editInstruction}
-                  onChange={(e) => setEditInstruction(e.target.value)}
+                  onChange={(event) => setEditInstruction(event.target.value)}
                   disabled={busy}
                   rows={4}
                   placeholder="เช่น ทำแพ็คราคาให้เข้ากับ CI ร้านมากขึ้น, เพิ่มราคาตัวใหญ่ขึ้น, ลดความรก, เปลี่ยนโทนเป็นทองดำ"
-                  className="mt-4 w-full resize-none rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm outline-none transition placeholder:text-white/25 focus:border-white/40 disabled:opacity-60"
+                  className="resize-none text-sm"
                 />
 
-                <button
-                  type="button"
+                <Button
+                  variant="success"
+                  loading={refining}
+                  loadingLabel="AI กำลังแก้ไขภาพ..."
                   disabled={busy || !editInstruction.trim()}
                   onClick={handleRefine}
-                  className="mt-3 flex w-full items-center justify-center gap-3 rounded-2xl bg-emerald-400 px-5 py-4 font-bold text-black transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+                  fullWidth
+                  className="mt-3"
                 >
-                  {refining && (
-                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-black/20 border-t-black" />
-                  )}
-
-                  {refining ? "AI กำลังแก้ไขภาพ..." : "แก้ไขภาพนี้"}
-                </button>
+                  แก้ไขภาพนี้
+                </Button>
 
                 {refining && (
-                  <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-100">
+                  <StatusMessage tone="success" className="mt-4">
                     กำลังส่งภาพผลลัพธ์เดิมกลับไปให้ AI ปรับแก้ตามคำสั่งของคุณ
-                  </div>
+                  </StatusMessage>
                 )}
               </div>
             )}
-          </div>
+          </section>
         </div>
       </section>
     </main>
-  );
-}
-
-function UploadBox({
-  title,
-  desc,
-  name,
-  preview,
-  onChange,
-}: {
-  title: string;
-  desc: string;
-  name: string;
-  preview: string | null;
-  onChange: (file?: File) => void;
-}) {
-  return (
-    <label className="group cursor-pointer rounded-2xl border border-white/10 bg-black/30 p-4 transition hover:border-white/30 hover:bg-white/[0.06]">
-      <div className="flex items-center gap-4">
-        <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-white/5">
-          {preview ? (
-            <img src={preview} className="h-full w-full object-cover" alt="" />
-          ) : (
-            <span className="text-2xl opacity-50">＋</span>
-          )}
-        </div>
-
-        <div className="flex-1">
-          <p className="font-bold">{title}</p>
-          <p className="text-sm text-white/50">{desc}</p>
-          <p className="mt-2 text-xs text-white/30">PNG, JPG, WEBP</p>
-        </div>
-
-        <input
-          name={name}
-          type="file"
-          accept="image/*"
-          required
-          className="hidden"
-          onChange={(e) => onChange(e.target.files?.[0])}
-        />
-      </div>
-    </label>
-  );
-}
-
-function TextInput({
-  name,
-  label,
-  placeholder,
-  value,
-  onChange,
-}: {
-  name: string;
-  label: string;
-  placeholder: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium text-white/60">
-        {label}
-      </span>
-
-      <input
-        name={name}
-        required
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition placeholder:text-white/25 focus:border-white/40"
-      />
-    </label>
   );
 }
