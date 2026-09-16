@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #060609;
+  --foreground: #f5f3ff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --font-sans: var(--font-prompt);
+  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-prompt), "Leelawadee UI", Tahoma, Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.generator-studio input[type="text"],
+.generator-studio input:not([type]),
+.generator-studio select,
+.generator-studio textarea {
+  border-color: rgba(255, 255, 255, 0.09);
+  background-color: rgba(3, 3, 8, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025),
+    0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.generator-studio input[type="text"]:focus,
+.generator-studio input:not([type]):focus,
+.generator-studio select:focus,
+.generator-studio textarea:focus {
+  border-color: rgba(216, 180, 254, 0.58);
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.1),
+    0 12px 34px rgba(0, 0, 0, 0.18);
+}
+
+.generator-studio label:has(input[type="file"]) {
+  border-color: rgba(255, 255, 255, 0.085);
+  background: rgba(2, 2, 6, 0.36);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.022);
+}
+
+.generator-studio label:has(input[type="file"]):hover {
+  border-color: rgba(216, 180, 254, 0.36);
+  background: rgba(192, 132, 252, 0.055);
+}
+
+.generator-studio label:has(input[type="radio"]) {
+  border-color: rgba(255, 255, 255, 0.055);
+  background: rgba(2, 2, 6, 0.2);
+}
+
+.generator-studio label:has(input[type="radio"]:checked) {
+  border-color: rgba(216, 180, 254, 0.42);
+  background: rgba(192, 132, 252, 0.085);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

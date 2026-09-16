@@ -1,0 +1,8 @@
+.env*
+.agents/
+production-recovery/
+*.log
+.test-build/
+*.tsbuildinfo
+node_modules/
+.next/

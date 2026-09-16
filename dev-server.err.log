@@ -1,0 +1,8 @@
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          5452
+- Dir:          D:\game-promo-generator-tuh8
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 5452 /F to stop it.

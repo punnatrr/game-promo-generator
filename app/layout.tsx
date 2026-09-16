@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
+import { Geist_Mono, Prompt } from "next/font/google";
 import "./globals.css";
 
+const prompt = Prompt({
+  variable: "--font-prompt",
+  subsets: ["thai", "latin"],
+  weight: ["400", "500", "600", "700", "900"],
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Game Promo Generator",
-  description: "สร้างภาพโปรโมตไอเทมเกมจากภาพอ้างอิงด้วย AI",
+  title: "LAZY-AI.GAME",
+  description: "AI game promotion poster generator",
 };
 
 export default function RootLayout({
@@ -12,7 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className="h-full antialiased">
+    <html
+      lang="th"
+      className={`${prompt.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

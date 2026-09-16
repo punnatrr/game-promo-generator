@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useState, type ChangeEvent } from "react";
+import { useId, useState, type ChangeEvent, type ReactNode } from "react";
 import { cn } from "@/lib/classes";
 
 interface FileUploadProps {
@@ -17,6 +17,7 @@ interface FileUploadProps {
   maxSizeBytes?: number;
   onRejected?: (message: string) => void;
   onFileChange: (file?: File) => void;
+  action?: ReactNode;
   className?: string;
 }
 
@@ -33,6 +34,7 @@ export function FileUpload({
   maxSizeBytes,
   onRejected,
   onFileChange,
+  action,
   className,
 }: FileUploadProps) {
   const generatedId = useId();
@@ -106,6 +108,7 @@ export function FileUpload({
           )}
           <span className="mt-2 block text-xs text-white/35">PNG, JPG หรือ WEBP</span>
         </span>
+        {action && <span className="shrink-0">{action}</span>}
         <input
           id={inputId}
           name={name}

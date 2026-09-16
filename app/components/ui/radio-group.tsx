@@ -3,14 +3,16 @@
 import { useId } from "react";
 import { cn } from "@/lib/classes";
 
-export interface RadioOption<T extends string> {
+type RadioValue = string | number;
+
+export interface RadioOption<T extends RadioValue> {
   value: T;
   label: string;
   description?: string;
   disabled?: boolean;
 }
 
-interface RadioGroupProps<T extends string> {
+interface RadioGroupProps<T extends RadioValue> {
   name: string;
   label: string;
   value: T;
@@ -20,9 +22,18 @@ interface RadioGroupProps<T extends string> {
   required?: boolean;
   error?: string;
   className?: string;
+  columns?: 1 | 2 | 3 | 4 | 5;
 }
 
-export function RadioGroup<T extends string>({
+const COLUMN_CLASSES = {
+  1: "grid-cols-1",
+  2: "sm:grid-cols-2",
+  3: "sm:grid-cols-3",
+  4: "grid-cols-2 sm:grid-cols-4",
+  5: "grid-cols-2 sm:grid-cols-5",
+} as const;
+
+export function RadioGroup<T extends RadioValue>({
   name,
   label,
   value,
@@ -32,6 +43,7 @@ export function RadioGroup<T extends string>({
   required = false,
   error,
   className,
+  columns = 2,
 }: RadioGroupProps<T>) {
   const groupId = useId();
   const errorId = error ? `${groupId}-error` : undefined;
@@ -42,7 +54,7 @@ export function RadioGroup<T extends string>({
         {label}
         {required && <span className="ml-1 text-pink-300" aria-hidden="true">*</span>}
       </legend>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className={cn("grid gap-2", COLUMN_CLASSES[columns])}>
         {options.map((option) => {
           const selected = value === option.value;
           return (

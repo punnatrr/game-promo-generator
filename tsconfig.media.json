@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "module": "CommonJS", "moduleResolution": "Node", "target": "ES2022", "rootDir": "lib", "outDir": ".test-build/media-worker", "noEmit": false, "isolatedModules": false, "incremental": false, "declaration": false },
+  "include": ["lib/media/worker.ts", "lib/motion/worker.ts"],
+  "exclude": ["node_modules", "production-recovery", ".test-build"]
+}

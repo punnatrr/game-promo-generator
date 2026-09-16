@@ -1,6 +1,34 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## LAZY TOPUP Game Calendar
+
+The previous Game Content entry now opens a verified public event calendar at
+`/game-calendar`; bot review and approval live in the main `/admin` dashboard.
+Setup, database migrations, Cron schedules, source limitations, API routes, and
+testing are documented in [docs/GAME_CALENDAR.md](docs/GAME_CALENDAR.md).
+
+Subscription plans, payment invariants, admin access, and the migration runner
+are documented in [docs/SUBSCRIPTION.md](docs/SUBSCRIPTION.md).
+
 ## Getting Started
+
+### Reference Roles
+
+Generation is a single-submit workflow with three uploads: game artwork,
+product/price reference, and target-shop style. The prompt limits upload 2 to
+product data and isolated item icons, and upload 3 to shop design and footer.
+There is no separate extraction API or catalog confirmation step.
+Prompt constraints cannot guarantee perfect model compliance; inspect outputs.
+Run `npm run test:prompt` to check prompt source-role rules.
+
+Create `.env.local` from `.env.example` and add the provider keys you want to use:
+
+```bash
+OPENAI_API_KEY="your_openai_api_key"
+GEMINI_API_KEY="your_gemini_api_key"
+```
+
+The model selector supports only `gpt-image-2` and `gpt-image-3`. OpenAI keys must stay server-side and should be added to Vercel Environment Variables for production.
 
 First, run the development server:
 

@@ -7,13 +7,30 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test tests/*.test.mjs"
+    "test:prompt": "tsc -p tsconfig.tests.json && node --test tests/prompt.test.cjs",
+    "test:brand": "tsc -p tsconfig.tests.json && node --test tests/brand-kit.test.cjs",
+    "test:brand:api": "node --test tests/brand-api.test.mjs",
+    "media:worker:build": "tsc -p tsconfig.media.json",
+    "media:worker": "node --env-file-if-exists=.env.local scripts/media-worker.mjs",
+    "test:media": "npm run media:worker:build && node --test tests/media-files.test.mjs tests/media-api.test.mjs",
+    "test:motion": "npm run media:worker:build && node --test tests/motion.test.mjs",
+    "test:frame": "npm run media:worker:build && node --test tests/frame.test.mjs",
+    "db:migrate": "node --env-file-if-exists=.env.local scripts/run-migrations.mjs",
+    "db:migrate:subscription": "node --env-file-if-exists=.env.local scripts/run-migrations.mjs --only=20260801_subscription_phase1.sql",
+    "db:migrate:subscription:phase2": "node --env-file-if-exists=.env.local scripts/run-migrations.mjs --only=20260801_subscription_phase2.sql",
+    "db:check:subscription": "node --env-file-if-exists=.env.local scripts/check-subscription-phase1.mjs",
+    "db:check:subscription:phase2": "node --env-file-if-exists=.env.local scripts/check-subscription-phase2.mjs",
+    "db:check:vip-support": "node --env-file-if-exists=.env.local scripts/check-vip-support.mjs",
+    "test": "tsc -p tsconfig.tests.json && node --test tests/daily-image-storage.test.cjs tests/game-calendar.test.cjs tests/game-source-adapters.test.cjs tests/subscription-phase1.test.cjs tests/subscription-phase2.test.cjs tests/trial-codes.test.cjs"
   },
   "dependencies": {
     "@google/genai": "^1.50.1",
-    "next": "16.2.4",
+    "@vercel/blob": "^2.3.0",
+    "next": "^16.2.12",
+    "postgres": "^3.4.9",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sharp": "0.35.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -21,8 +38,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.4",
+    "eslint-config-next": "^16.2.12",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "0.35.4"
   }
 }

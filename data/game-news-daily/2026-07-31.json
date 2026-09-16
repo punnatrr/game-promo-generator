@@ -1,0 +1,323 @@
+{
+  "date": "2026-07-31",
+  "entries": [
+    {
+      "gameSlug": "efootball",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต eFootball ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ eFootball ครบแล้ว พบประกาศไว้อาลัยซึ่งไม่ใช่อัปเดตภายในเกม และไม่พบ patch, skin, item, map, character, mode หรือ collaboration ใหม่ที่เผยแพร่วันที่ 31 กรกฎาคมตามเวลาไทย",
+      "sourceUrl": "https://www.konami.com/efootball/en/",
+      "sourceLabel": "eFootball Official Site",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://www.konami.com/efootball/en/",
+        "https://www.facebook.com/playeFootball/",
+        "https://www.instagram.com/efootball/",
+        "https://x.com/play_eFootball",
+        "https://www.youtube.com/@play_eFootball"
+      ]
+    },
+    {
+      "gameSlug": "cookierun-classic",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต CookieRun Classic ใหม่",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ CookieRun Classic ครบแล้ว ยังไม่พบประกาศอัปเดตภายในเกมประเภทที่กำหนดซึ่งเผยแพร่วันที่ 31 กรกฎาคมตามเวลาไทย และไม่นำประกาศเก่ามาใช้ซ้ำ",
+      "sourceUrl": "https://cs-cookierunclassic.devsisters.com/hc/en-us",
+      "sourceLabel": "CookieRun Classic Official Support",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://cs-cookierunclassic.devsisters.com/hc/en-us",
+        "https://www.facebook.com/CRClassicEN",
+        "https://www.instagram.com/crclassic_en/",
+        "https://x.com/CRClassicEN"
+      ]
+    },
+    {
+      "gameSlug": "roblox",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Roblox ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ Roblox ครบแล้ว พบเพียงประกาศ Roblox Inspire Challenge และผลประกอบการ ซึ่งไม่ใช่ patch, skin, item, map, character, mode หรือ collaboration ภายในเกมตามเกณฑ์ข่าววันนี้",
+      "sourceUrl": "https://about.roblox.com/newsroom",
+      "sourceLabel": "Roblox Newsroom",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://about.roblox.com/newsroom",
+        "https://www.instagram.com/roblox/",
+        "https://www.tiktok.com/@roblox",
+        "https://x.com/Roblox",
+        "https://www.youtube.com/@Roblox"
+      ]
+    },
+    {
+      "gameSlug": "free-fire",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Free Fire ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ Free Fire ครบแล้ว เนื้อหาใหม่ที่พบเป็นการถ่ายทอดการแข่งขัน จึงไม่เข้าเกณฑ์ และไม่พบประกาศอัปเดตภายในเกมใหม่วันที่ 31 กรกฎาคมตามเวลาไทย",
+      "sourceUrl": "https://ff.garena.in.th/en/news/1/",
+      "sourceLabel": "Garena Free Fire Official News",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://ff.garena.in.th/en/news/1/",
+        "https://www.facebook.com/freefireth",
+        "https://www.instagram.com/freefireth/",
+        "https://www.youtube.com/@GarenaFreeFireTH",
+        "https://www.facebook.com/FreeFireEsportsTH",
+        "https://www.instagram.com/freefireesportsth/",
+        "https://www.tiktok.com/@ffesportsth"
+      ]
+    },
+    {
+      "gameSlug": "ragnarok-the-new-world",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Ragnarok: The New World ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ครบแล้ว พบประกาศ Premium Member Center ที่เน้นภารกิจสะสมแต้ม แลกรางวัล และจับรางวัล ซึ่งไม่เข้าเกณฑ์ข่าวอัปเดตตัวเกม จึงไม่พบประกาศใหม่ที่นำมาใช้ได้ในวันนี้",
+      "sourceUrl": "https://gwww.gnjoy.hk/sea_official/index.html",
+      "sourceLabel": "Ragnarok: The New World Official Website",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://gwww.gnjoy.hk/sea_official/index.html",
+        "https://www.facebook.com/RagnarokTheNewWorld.Gravity",
+        "https://www.youtube.com/@RagnarokTheNewWorld",
+        "https://discord.gg/pGbjenEwgN"
+      ]
+    },
+    {
+      "gameSlug": "fc-mobile",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต FC Mobile ใหม่ที่ไม่ซ้ำข่าวเดิม",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ EA SPORTS FC Mobile ครบแล้ว โพสต์วันนี้กล่าวถึงแคมเปญ Chelsea ในคอนเทนต์ Champions และ FCM TV ซึ่งเป็นการต่อยอดข่าว Champions จากวันก่อน ไม่ใช่ประกาศอัปเดตใหม่สำหรับวันที่ 31 กรกฎาคม",
+      "sourceUrl": "https://www.ea.com/games/ea-sports-fc/fc-mobile/news",
+      "sourceLabel": "EA SPORTS FC Mobile Official News",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://www.ea.com/games/ea-sports-fc/fc-mobile/news",
+        "https://www.facebook.com/EASFCMobile/",
+        "https://www.instagram.com/easfcmobile/",
+        "https://x.com/EASFCMOBILE"
+      ]
+    },
+    {
+      "gameSlug": "garena-rov",
+      "status": "update",
+      "title": "RoV เตรียมปรับสมดุล D'Arcy ในเซิร์ฟเวอร์ทดสอบ",
+      "summaryTh": "Garena RoV Thailand ประกาศว่า D'Arcy จะได้รับการปรับใหม่และมีการอัปเดตสมดุลในเซิร์ฟเวอร์ทดสอบเร็ว ๆ นี้ โดยต้นฉบับยังไม่ได้ระบุรายละเอียดตัวเลขหรือวันเปิดใช้ในเซิร์ฟเวอร์หลัก",
+      "sourceUrl": "https://www.facebook.com/reel/1586269473056734/",
+      "sourceLabel": "Garena RoV Thailand Facebook",
+      "platform": "facebook",
+      "updateType": "patch",
+      "sourcePublishedAt": "2026-07-31T09:00:00Z",
+      "checkedSources": [
+        "https://rov.in.th/",
+        "https://www.facebook.com/ROVTH/",
+        "https://www.instagram.com/garena_rov_official/"
+      ]
+    },
+    {
+      "gameSlug": "pubg-mobile",
+      "status": "update",
+      "title": "PUBG MOBILE แก้ปัญหา Classic Mode, World of Wonder และสกินอาวุธ",
+      "summaryTh": "PUBG MOBILE เผย Patch Notes วันที่ 31 กรกฎาคม แก้ปุ่มยกเลิกติดตามเพื่อนหายระหว่างโดดร่ม ลดเลเวลที่ต้องใช้เพื่ออัปโหลดเสียงใน World of Wonder เป็นเลเวล 6 และแก้ Karambit - Blazing Sun ที่แสดงเป็นอาวุธปกติในมุมมองเพื่อนร่วมทีม",
+      "sourceUrl": "https://x.com/PUBGMOBILE/status/2083146454772646166",
+      "sourceLabel": "PUBG MOBILE X",
+      "platform": "x",
+      "updateType": "patch",
+      "sourcePublishedAt": "2026-07-31T11:03:12.464Z",
+      "checkedSources": [
+        "https://www.pubgmobile.com/en-US/events.shtml",
+        "https://www.facebook.com/PUBGMOBILE",
+        "https://www.instagram.com/pubgmobile/",
+        "https://www.tiktok.com/@pubgmobile",
+        "https://x.com/PUBGMobile",
+        "https://www.youtube.com/pubgmobile",
+        "https://discord.gg/pubgmobile"
+      ]
+    },
+    {
+      "gameSlug": "mobile-legends",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Mobile Legends ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ Mobile Legends: Bang Bang ครบแล้ว โพสต์วันนี้เป็นกิจกรรมปาร์ตี้ดันแรงก์และการแจกสกิน ซึ่งถูกตัดออกตามเกณฑ์ และไม่พบประกาศอัปเดตตัวเกมใหม่ที่ใช้เป็นข่าววันนี้ได้",
+      "sourceUrl": "https://en.moonton.com/news/index.html",
+      "sourceLabel": "MOONTON Official News",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://en.moonton.com/news/index.html",
+        "https://www.facebook.com/MobileLegendsGameTHLA/",
+        "https://www.tiktok.com/@mlbb_thla"
+      ]
+    },
+    {
+      "gameSlug": "whiteout-survival",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Whiteout Survival ใหม่",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ Whiteout Survival ครบแล้ว ประกาศอัปเดตล่าสุดที่พบเป็น Hotfix วันที่ 30 กรกฎาคม จึงไม่นำมาใช้ซ้ำ และไม่พบประกาศใหม่วันที่ 31 กรกฎาคมตามเวลาไทย",
+      "sourceUrl": "https://www.centurygames.com/whiteout-survival/",
+      "sourceLabel": "Whiteout Survival Official Website",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://www.centurygames.com/whiteout-survival/",
+        "https://www.facebook.com/WhiteoutSurvival/",
+        "https://www.instagram.com/whiteoutsurvival/",
+        "https://www.youtube.com/@WhiteoutSurvivalOfficial"
+      ]
+    },
+    {
+      "gameSlug": "kingshot",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Kingshot ใหม่",
+      "summaryTh": "ตรวจเว็บไซต์และช่องทาง Official ของ Kingshot ครบแล้ว ประกาศ Hotfix ที่พบลงวันที่ 30 กรกฎาคม จึงไม่ใช้เป็นข่าวของวันนี้ และไม่พบประกาศ patch, skin, item, map, character, mode หรือ collaboration ใหม่วันที่ 31 กรกฎาคม",
+      "sourceUrl": "https://www.centurygames.com/games/kingshot/",
+      "sourceLabel": "Kingshot Official Site",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://www.centurygames.com/games/kingshot/",
+        "https://www.facebook.com/share/14dZiDuJ8n/",
+        "https://discord.gg/9rzDtTWQbz"
+      ]
+    },
+    {
+      "gameSlug": "last-war",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Last War ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ Last War ครบแล้ว เนื้อหาใหม่ที่พบเป็น Official Livestream ของ Goldvein จึงไม่เข้าเกณฑ์ และไม่พบประกาศอัปเดตภายในเกมใหม่วันที่ 31 กรกฎาคมตามเวลาไทย",
+      "sourceUrl": "https://www.lastwar.com/en/home.html",
+      "sourceLabel": "Last War Official Website",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://www.lastwar.com/en/home.html",
+        "https://www.facebook.com/lastwarsurvival",
+        "https://www.instagram.com/lastwarsurvival_official/",
+        "https://x.com/lastwarsurvival",
+        "https://discord.gg/lastwarsurvival"
+      ]
+    },
+    {
+      "gameSlug": "digimon-up",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต DIGIMON UP ใหม่ที่ไม่ซ้ำข่าวเดิม",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ DIGIMON UP ครบแล้ว โพสต์ Inori Misono & Aegiomon วันนี้มีข้อความเดียวกับประกาศวันที่ 29 กรกฎาคม จึงถือเป็นการย้ำข่าวเดิมและไม่นำมาเขียนเป็นข่าวใหม่ของวันที่ 31 กรกฎาคม",
+      "sourceUrl": "https://dgup.bn-ent.net/en/",
+      "sourceLabel": "DIGIMON UP Official Website",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://dgup.bn-ent.net/en/",
+        "https://www.facebook.com/digimon.up.en/",
+        "https://x.com/Digimon_up_en"
+      ]
+    },
+    {
+      "gameSlug": "soul-land-awakening-world",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Soul Land: Awakening World ใหม่",
+      "summaryTh": "ตรวจเว็บไซต์และช่องทาง Official ของ Soul Land: Awakening World ครบแล้ว ยังไม่พบประกาศ patch, skin, item, map, character, mode หรือ collaboration ใหม่ที่เผยแพร่วันที่ 31 กรกฎาคมตามเวลาไทย",
+      "sourceUrl": "https://gevents.37games.com/official_slmsea/index.html",
+      "sourceLabel": "Soul Land: Awakening World Official Website",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://gevents.37games.com/official_slmsea/index.html",
+        "https://discord.gg/u9bmevtZsw"
+      ]
+    },
+    {
+      "gameSlug": "honkai-star-rail",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Honkai: Star Rail ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ Honkai: Star Rail ครบแล้ว เนื้อหาใหม่ที่พบเป็นแฟนอาร์ตและภาพปฏิทินเดือนสิงหาคม ไม่ใช่ประกาศอัปเดตภายในเกม จึงไม่มีข่าวใหม่ที่เข้าเกณฑ์วันนี้",
+      "sourceUrl": "https://hsr.hoyoverse.com/",
+      "sourceLabel": "Honkai: Star Rail Official Website",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://hsr.hoyoverse.com/",
+        "https://www.facebook.com/HonkaiStarRail/",
+        "https://www.instagram.com/honkaistarrail/",
+        "https://www.tiktok.com/@honkaistarrail_official",
+        "https://x.com/honkaistarrail"
+      ]
+    },
+    {
+      "gameSlug": "love-and-deepspace",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต Love and Deepspace ใหม่",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ Love and Deepspace ครบแล้ว ยังไม่พบประกาศอัปเดตภายในเกมประเภทที่กำหนดซึ่งเผยแพร่วันที่ 31 กรกฎาคมตามเวลาไทย และไม่นำประกาศเก่ามาใช้ซ้ำ",
+      "sourceUrl": "https://loveanddeepspace.infoldgames.com/en-EN/home",
+      "sourceLabel": "Love and Deepspace Official Website",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://loveanddeepspace.infoldgames.com/en-EN/home",
+        "https://www.facebook.com/LoveandDeepspaceEN/",
+        "https://www.instagram.com/loveanddeepspace/",
+        "https://www.tiktok.com/@loveanddeepspace",
+        "https://x.com/Love_Deepspace"
+      ]
+    },
+    {
+      "gameSlug": "genshin-wuthering-waves",
+      "status": "update",
+      "title": "Genshin Impact เผยเวอร์ชัน 7.0 และการสำรวจ Snezhnaya",
+      "summaryTh": "Genshin Impact เผยเทรลเลอร์เวอร์ชัน 7.0 “Everwinter Without Mercy” พร้อมวิดีโอแนะนำการสำรวจดินแดนหิมะ Snezhnaya โดยระบุว่าผู้เล่นจะใช้อุปกรณ์และกลไกต่าง ๆ เพื่อออกสำรวจพื้นที่น้ำแข็ง ส่วน Wuthering Waves ไม่พบประกาศใหม่ที่ลงวันนี้",
+      "sourceUrl": "https://x.com/GenshinImpact/status/2083178615450083441",
+      "sourceLabel": "Genshin Impact X",
+      "platform": "x",
+      "updateType": "map",
+      "sourcePublishedAt": "2026-07-31T13:11:00.167Z",
+      "checkedSources": [
+        "https://genshin.hoyoverse.com/",
+        "https://www.facebook.com/Genshinimpact/",
+        "https://www.instagram.com/genshinimpact/",
+        "https://www.tiktok.com/@genshinimpact_en",
+        "https://x.com/GenshinImpact",
+        "https://www.facebook.com/WutheringWaves.Official/",
+        "https://www.instagram.com/wuthering_waves/",
+        "https://www.tiktok.com/@wutheringwaves_official",
+        "https://x.com/Wuthering_Waves"
+      ]
+    },
+    {
+      "gameSlug": "valorant",
+      "status": "no-update",
+      "title": "วันนี้ยังไม่มีประกาศอัปเดต VALORANT ที่เข้าเกณฑ์",
+      "summaryTh": "ตรวจเว็บไซต์และบัญชี Official ของ VALORANT ครบแล้ว ยังไม่พบประกาศ patch, skin, item, map, character, mode หรือ collaboration ใหม่ที่เผยแพร่วันที่ 31 กรกฎาคมตามเวลาไทย และไม่นำ Patch Notes 13.02 จากวันที่ 28 กรกฎาคมมาใช้ซ้ำ",
+      "sourceUrl": "https://playvalorant.com/th-th/news/",
+      "sourceLabel": "VALORANT Official News",
+      "platform": "website",
+      "updateType": null,
+      "sourcePublishedAt": null,
+      "checkedSources": [
+        "https://playvalorant.com/th-th/news/",
+        "https://www.facebook.com/PlayVALORANT/",
+        "https://www.instagram.com/playvalorantofficial/",
+        "https://www.tiktok.com/@valorant",
+        "https://x.com/VALORANT",
+        "https://www.youtube.com/@valorant"
+      ]
+    }
+  ]
+}

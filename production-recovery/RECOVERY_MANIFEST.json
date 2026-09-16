@@ -1,0 +1,292 @@
+﻿{
+    "deploymentId":  "dpl_GxdsDycX9UqtZk73YUkk8zPURhUL",
+    "deploymentUrl":  "game-promo-generator-tuh8-5zerqsnr6-punnatee2546-8693s-projects.vercel.app",
+    "recoveredAt":  "2026-07-11T22:34:41.4308109Z",
+    "fileCount":  56,
+    "totalBytes":  452961,
+    "files":  [
+                  {
+                      "path":  ".env.example",
+                      "uid":  "b439a78804a18d5d398f3b1aabe65b7b72bca152",
+                      "bytes":  450
+                  },
+                  {
+                      "path":  "README.md",
+                      "uid":  "67b77202f90bbc70c3ff9192944023eb1711127f",
+                      "bytes":  1867
+                  },
+                  {
+                      "path":  "app/admin/payments/page.tsx",
+                      "uid":  "a839c52fca37bdc0e1f9bbb630c2ed24d60fb063",
+                      "bytes":  7380
+                  },
+                  {
+                      "path":  "app/api/admin/payments/approve/route.ts",
+                      "uid":  "013ee504135c53bb95980a76d7099cdaee9e3ca9",
+                      "bytes":  1563
+                  },
+                  {
+                      "path":  "app/api/admin/payments/reject/route.ts",
+                      "uid":  "2316a123891669c80a8b8ee60e20cf500676fd5e",
+                      "bytes":  1556
+                  },
+                  {
+                      "path":  "app/api/admin/payments/route.ts",
+                      "uid":  "47788740bf130b98dfd516ca00abf4aae0424682",
+                      "bytes":  1027
+                  },
+                  {
+                      "path":  "app/api/auth/me/route.ts",
+                      "uid":  "57945e5e71c17edab8995d2207a7461f8950a2af",
+                      "bytes":  352
+                  },
+                  {
+                      "path":  "app/api/auth/sign-in/route.ts",
+                      "uid":  "b22e0ba1b3ff3cd936cf78f22012b3b47c25f54f",
+                      "bytes":  1255
+                  },
+                  {
+                      "path":  "app/api/auth/sign-out/route.ts",
+                      "uid":  "a5d3bb55e0a40b1df12edf9625dd89a4b1006142",
+                      "bytes":  496
+                  },
+                  {
+                      "path":  "app/api/auth/sign-up/route.ts",
+                      "uid":  "e02147990af58a36df36394b5dc7858678a6e38d",
+                      "bytes":  1854
+                  },
+                  {
+                      "path":  "app/api/generate/route.ts",
+                      "uid":  "ee31dfaf4a739e999f95d60458f497e4665a26eb",
+                      "bytes":  23627
+                  },
+                  {
+                      "path":  "app/api/history/me/route.ts",
+                      "uid":  "f3aeee7f4af059ef532f4bf27a93e753447058d5",
+                      "bytes":  883
+                  },
+                  {
+                      "path":  "app/api/payments/create/route.ts",
+                      "uid":  "53e1d68b195d932ba5ed667cf4c030a666cb2a40",
+                      "bytes":  2071
+                  },
+                  {
+                      "path":  "app/api/payments/me/route.ts",
+                      "uid":  "5da7325f45884ae7347d97bd5ebe0b48ff0b704a",
+                      "bytes":  813
+                  },
+                  {
+                      "path":  "app/api/payments/proof/route.ts",
+                      "uid":  "1d453e9d175a9f4bc1e4d954affe2aa75f8ae17e",
+                      "bytes":  2239
+                  },
+                  {
+                      "path":  "app/api/plans/route.ts",
+                      "uid":  "6cfcb70e2724d5a28fc94b86d1026d0a94aec545",
+                      "bytes":  250
+                  },
+                  {
+                      "path":  "app/api/subscription/me/route.ts",
+                      "uid":  "b1dcf62e73dd31e07e212b7e6bed739463f300a9",
+                      "bytes":  1355
+                  },
+                  {
+                      "path":  "app/checkout/page.tsx",
+                      "uid":  "2edab8fa1eb4f7b3451ef0de024eb136eb26e7bc",
+                      "bytes":  11521
+                  },
+                  {
+                      "path":  "app/constants.ts",
+                      "uid":  "cab3a809d6efa55eeb203ac49220a696a224b3bb",
+                      "bytes":  907
+                  },
+                  {
+                      "path":  "app/dashboard/history/page.tsx",
+                      "uid":  "8f3714beb1b272a7d032d8cc6d17d3f161d41fb0",
+                      "bytes":  6537
+                  },
+                  {
+                      "path":  "app/dashboard/page.tsx",
+                      "uid":  "bbeff3db63bc647707b1174e9dcaba1c2084c92f",
+                      "bytes":  7782
+                  },
+                  {
+                      "path":  "app/favicon.ico",
+                      "uid":  "9ecfcc8f0ead0bf3d2d7c39e084b88f41cc89a2e",
+                      "bytes":  25931
+                  },
+                  {
+                      "path":  "app/globals.css",
+                      "uid":  "962e3d2093e4e6eed8b02d62662dad6433bbdbb3",
+                      "bytes":  514
+                  },
+                  {
+                      "path":  "app/layout.tsx",
+                      "uid":  "caececaed10dc0d4d5b5318dbffbb026e515f8a8",
+                      "bytes":  751
+                  },
+                  {
+                      "path":  "app/lib/history-storage.ts",
+                      "uid":  "fea8d482c92e06b3ae574b62497f74f864d03380",
+                      "bytes":  1152
+                  },
+                  {
+                      "path":  "app/lib/image-files.ts",
+                      "uid":  "f7c4e6e47c9f2ca4f2577fc5ad3a9f4da2e749ed",
+                      "bytes":  1071
+                  },
+                  {
+                      "path":  "app/page.tsx",
+                      "uid":  "d7310ead60bc43e1bd5aecd300977ccc58ecc043",
+                      "bytes":  35548
+                  },
+                  {
+                      "path":  "app/pricing/page.tsx",
+                      "uid":  "df4671ef722845908260223f397d34835777c80f",
+                      "bytes":  4423
+                  },
+                  {
+                      "path":  "app/sign-in/page.tsx",
+                      "uid":  "1f96b92d607210c9d2f303e644e46406ee96fca0",
+                      "bytes":  3166
+                  },
+                  {
+                      "path":  "app/sign-up/page.tsx",
+                      "uid":  "d6a541d3c20b89318b7f5566e2c6cee5bfd41fa8",
+                      "bytes":  3721
+                  },
+                  {
+                      "path":  "app/types.ts",
+                      "uid":  "387086fbf5e000977db47bfc0272724495ed1696",
+                      "bytes":  470
+                  },
+                  {
+                      "path":  "db/schema.sql",
+                      "uid":  "3f0a15d6cb7a9f69d6badff554e690a2485fd646",
+                      "bytes":  6245
+                  },
+                  {
+                      "path":  "db/seed-plans.sql",
+                      "uid":  "340911fc892d0bcb8301ab2cf19baa70939df730",
+                      "bytes":  1240
+                  },
+                  {
+                      "path":  "eslint.config.mjs",
+                      "uid":  "7b3b62d43ebb71550e9aad41f196d9c16bcbf52c",
+                      "bytes":  483
+                  },
+                  {
+                      "path":  "lib/admin.ts",
+                      "uid":  "39f8a19f77c96c3d6605318df6ffc8e0f0b077e7",
+                      "bytes":  271
+                  },
+                  {
+                      "path":  "lib/auth.ts",
+                      "uid":  "a4adccdc5a9dd7f1e868ac27e529de452aeb19a1",
+                      "bytes":  4508
+                  },
+                  {
+                      "path":  "lib/db.ts",
+                      "uid":  "48338eac4bdf56efa7195b648e55c6ecd8cd1ddc",
+                      "bytes":  426
+                  },
+                  {
+                      "path":  "lib/generations/repository.ts",
+                      "uid":  "3156e1e78030581ebfc90420eedf797a87e831b2",
+                      "bytes":  3332
+                  },
+                  {
+                      "path":  "lib/payments/config.ts",
+                      "uid":  "c81bc32cfd87f8b1f0fa700d0f0bf96c0665d1e7",
+                      "bytes":  496
+                  },
+                  {
+                      "path":  "lib/payments/repository.ts",
+                      "uid":  "167d47d8d560ba0fec55f8f36d2b2dea607822b3",
+                      "bytes":  8259
+                  },
+                  {
+                      "path":  "lib/prompt.ts",
+                      "uid":  "2b40e71bdea18a8d2dab2582a90813c9165a9c4a",
+                      "bytes":  8775
+                  },
+                  {
+                      "path":  "lib/subscription/plans.ts",
+                      "uid":  "889e571f14b3189d3ebc0052e0620ac5829be58d",
+                      "bytes":  1691
+                  },
+                  {
+                      "path":  "lib/subscription/quota.ts",
+                      "uid":  "873cbf3536cab329aa8ed65e90a66cf592550a63",
+                      "bytes":  2121
+                  },
+                  {
+                      "path":  "lib/subscription/repository.ts",
+                      "uid":  "ece71a130bdaf2d0b84fe13d9eb145f023b9e078",
+                      "bytes":  3353
+                  },
+                  {
+                      "path":  "next-env.d.ts",
+                      "uid":  "7d1f870fce9d7a4537f204641c81d815abebd45b",
+                      "bytes":  253
+                  },
+                  {
+                      "path":  "next.config.ts",
+                      "uid":  "fc151f2adee0c0637d40d55a8c1c763aaf5084d3",
+                      "bytes":  154
+                  },
+                  {
+                      "path":  "package-lock.json",
+                      "uid":  "91c68b5c4de6cf6fb2d05a068ec3e94b3f077702",
+                      "bytes":  254005
+                  },
+                  {
+                      "path":  "package.json",
+                      "uid":  "e94182506c95ca0bb860013108adb23d0b1a8283",
+                      "bytes":  628
+                  },
+                  {
+                      "path":  "postcss.config.mjs",
+                      "uid":  "ccb8b6288e0fe829534eb4c452a48bc27bbcdf01",
+                      "bytes":  101
+                  },
+                  {
+                      "path":  "public/file.svg",
+                      "uid":  "fb380eeffe87d50b597383664c02982964d0d28c",
+                      "bytes":  391
+                  },
+                  {
+                      "path":  "public/globe.svg",
+                      "uid":  "2eba23b01a46733bb8423e6d38ebf5f7e95abec5",
+                      "bytes":  1035
+                  },
+                  {
+                      "path":  "public/next.svg",
+                      "uid":  "3f3e95622612b989c5bd6a03299a308c6f3c7e6b",
+                      "bytes":  1375
+                  },
+                  {
+                      "path":  "public/vercel.svg",
+                      "uid":  "cebb8852d58c8886be3e9051a26957f42bb82f1a",
+                      "bytes":  128
+                  },
+                  {
+                      "path":  "public/window.svg",
+                      "uid":  "54c48e0daa6caa317fe1b4c419007fd93e948db9",
+                      "bytes":  385
+                  },
+                  {
+                      "path":  "tsconfig.json",
+                      "uid":  "c18c62ef7d3e1d1bf28400727281db581c9aa3bf",
+                      "bytes":  700
+                  },
+                  {
+                      "path":  "vercel.json",
+                      "uid":  "fc231044fca0fc81c69dea06fc8a9af43f51e565",
+                      "bytes":  74
+                  }
+              ],
+    "errors":  [
+
+               ]
+}
