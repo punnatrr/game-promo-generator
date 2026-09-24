@@ -23,7 +23,7 @@
     "db:check:subscription": "node --env-file-if-exists=.env.local scripts/check-subscription-phase1.mjs",
     "db:check:subscription:phase2": "node --env-file-if-exists=.env.local scripts/check-subscription-phase2.mjs",
     "db:check:vip-support": "node --env-file-if-exists=.env.local scripts/check-vip-support.mjs",
-    "test": "tsc -p tsconfig.tests.json && node --test tests/daily-image-storage.test.cjs tests/game-calendar.test.cjs tests/game-source-adapters.test.cjs tests/subscription-phase1.test.cjs tests/subscription-phase2.test.cjs tests/trial-codes.test.cjs"
+    "test": "tsc -p tsconfig.tests.json && node --test tests/daily-image-storage.test.cjs tests/game-calendar.test.cjs tests/game-source-adapters.test.cjs tests/subscription-phase1.test.cjs tests/subscription-phase2.test.cjs tests/trial-codes.test.cjs tests/leads.test.cjs"
   },
   "dependencies": {
     "@expo-google-fonts/prompt": "^0.4.1",
