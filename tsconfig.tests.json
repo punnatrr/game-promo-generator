@@ -54,6 +54,10 @@
     "lib/game-content/adapters/valorant.ts",
     "lib/game-content/adapters/mobile-legends.ts",
     "lib/game-content/adapters/pubg-mobile.ts",
-    "lib/game-content/adapters/registry.ts"
+    "lib/game-content/adapters/registry.ts",
+    "lib/leads/types.ts",
+    "lib/leads/logic.ts",
+    "lib/leads/source-adapters.ts",
+    "lib/leads/ai.ts"
   ]
 }
