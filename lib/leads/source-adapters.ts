@@ -36,7 +36,7 @@ export class CsvLeadSource implements LeadSourceAdapter {
   }
 }
 export class WebhookLeadSource implements LeadSourceAdapter {
-  readonly key="WEBHOOK";
+  readonly key:string="WEBHOOK";
   async normalize(input:unknown){return new ManualLeadSource().normalize(input);}
 }
-export class MetaAuthorizedSource extends WebhookLeadSource { readonly key="META_AUTHORIZED"; }
+export class MetaAuthorizedSource extends WebhookLeadSource { readonly key:string="META_AUTHORIZED"; }
