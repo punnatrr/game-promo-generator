@@ -595,3 +595,16 @@ export async function saveLeadSettings(
   `;
   return getLeadSettings(userId);
 }
+
+
+export async function setLeadSaved(userId: string, leadId: string, saved: boolean) {
+  const workspaceId = await readWorkspace(userId);
+  if (!workspaceId) throw new Error("LEAD_NOT_FOUND");
+  const rows = await getDb()`
+    update leads set is_saved = ${saved}, updated_at = now()
+    where id = ${leadId}::uuid and workspace_id = ${workspaceId}
+    returning id, is_saved
+  `;
+  if (!rows.length) throw new Error("LEAD_NOT_FOUND");
+  return rows[0];
+}
