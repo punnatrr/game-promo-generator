@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { StatusMessage } from "@/app/components/ui/status-message";
@@ -163,7 +162,7 @@ export default function LeadRadarPage(){
           <p className="mt-1 text-sm text-muted">ดูว่าใครกำลังหาเกมอะไร และควรตอบคนไหนก่อน</p>
         </div>
         <div className="flex gap-2">
-          <Link className="action-link secondary" href="/dashboard/leads/follow-up">ติดตาม</Link>
+          <Button variant="secondary" onClick={()=>setStatus("FOLLOW_UP")}>ติดตาม</Button>
           <Button onClick={()=>setShowAdd(true)}>+ เพิ่ม Lead</Button>
         </div>
       </div>
