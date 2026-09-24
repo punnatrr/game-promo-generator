@@ -444,3 +444,179 @@ export async function saveLeadReply(args: {
   if (!rows.length) throw new Error("LEAD_NOT_FOUND");
   return { id, content: args.content };
 }
+
+
+export async function createLeadImportJob(userId: string) {
+  const workspaceId = await ensureWorkspace(userId);
+  const id = randomUUID();
+  await getDb()`
+    insert into lead_import_jobs(id, workspace_id, created_by_user_id, source_type, status)
+    values (${id}, ${workspaceId}, ${userId}::uuid, 'CSV', 'PROCESSING')
+  `;
+  return { id, workspaceId };
+}
+
+export async function finishLeadImportJob(
+  userId: string,
+  jobId: string,
+  counts: { imported: number; duplicate: number; invalid: number; failed: number },
+  errorMessage?: string | null
+) {
+  const workspaceId = await readWorkspace(userId);
+  if (!workspaceId) throw new Error("LEAD_WORKSPACE_NOT_FOUND");
+  await getDb()`
+    update lead_import_jobs set
+      status = ${errorMessage ? "FAILED" : "COMPLETED"},
+      imported_count = ${counts.imported},
+      duplicate_count = ${counts.duplicate},
+      invalid_count = ${counts.invalid},
+      failed_count = ${counts.failed},
+      error_message = ${errorMessage || null},
+      completed_at = now()
+    where id = ${jobId}::uuid and workspace_id = ${workspaceId}
+  `;
+  return { id: jobId, ...counts, status: errorMessage ? "FAILED" : "COMPLETED" };
+}
+
+export async function listReplyTemplates(userId: string) {
+  const workspaceId = await readWorkspace(userId);
+  if (!workspaceId) return [];
+  return getDb()`
+    select t.*, coalesce(g.display_name, g.name) as game_name
+    from reply_templates t
+    left join games g on g.id = t.game_id
+    where t.workspace_id = ${workspaceId} and t.active
+    order by t.name
+  `;
+}
+
+export async function createReplyTemplate(
+  userId: string,
+  input: { name: string; gameId?: string | null; intent?: string | null; content: string }
+) {
+  const workspaceId = await ensureWorkspace(userId);
+  const id = randomUUID();
+  await getDb()`
+    insert into reply_templates
+      (id, workspace_id, created_by_user_id, name, game_id, intent, content, variables)
+    values
+      (${id}, ${workspaceId}, ${userId}::uuid, ${input.name},
+       ${input.gameId || null}::uuid, ${input.intent || null}, ${input.content},
+       '["game","package","price","store_name","promotion","contact"]'::jsonb)
+  `;
+  return { id };
+}
+
+export async function getLeadAnalytics(userId: string, days = 30) {
+  const workspaceId = await readWorkspace(userId);
+  if (!workspaceId) {
+    return {
+      total: 0, hot: 0, contacted: 0, won: 0, conversionRate: 0,
+      averageScore: 0, topGames: [], topIntent: [], sources: [],
+    };
+  }
+  const safeDays = Math.max(1, Math.min(365, Math.floor(days)));
+  const db = getDb();
+  const [summary] = await db`
+    select
+      count(*)::int as total,
+      count(*) filter (where lead_score >= 80 and not is_seller and not is_spam)::int as hot,
+      count(*) filter (where status in ('CONTACTED','WAITING','FOLLOW_UP','WON'))::int as contacted,
+      count(*) filter (where status = 'WON')::int as won,
+      coalesce(round(avg(lead_score), 1), 0) as average_score
+    from leads
+    where workspace_id = ${workspaceId}
+      and created_at >= now() - (${safeDays}::text || ' days')::interval
+  `;
+  const [topGames, topIntent, sources] = await Promise.all([
+    db`
+      select coalesce(g.display_name, g.name, 'ไม่ระบุเกม') as name, count(*)::int as count
+      from leads l left join games g on g.id = l.game_id
+      where l.workspace_id = ${workspaceId}
+        and l.created_at >= now() - (${safeDays}::text || ' days')::interval
+        and not (l.is_seller or l.is_spam)
+      group by coalesce(g.display_name, g.name, 'ไม่ระบุเกม')
+      order by count(*) desc limit 10
+    `,
+    db`
+      select intent as name, count(*)::int as count
+      from leads
+      where workspace_id = ${workspaceId}
+        and created_at >= now() - (${safeDays}::text || ' days')::interval
+        and not (is_seller or is_spam)
+      group by intent order by count(*) desc limit 10
+    `,
+    db`
+      select source_type as name, count(*)::int as count
+      from leads
+      where workspace_id = ${workspaceId}
+        and created_at >= now() - (${safeDays}::text || ' days')::interval
+      group by source_type order by count(*) desc limit 10
+    `,
+  ]);
+  const total = Number(summary?.total || 0);
+  const won = Number(summary?.won || 0);
+  return {
+    total,
+    hot: Number(summary?.hot || 0),
+    contacted: Number(summary?.contacted || 0),
+    won,
+    conversionRate: total ? Math.round((won / total) * 1000) / 10 : 0,
+    averageScore: Number(summary?.average_score || 0),
+    topGames,
+    topIntent,
+    sources,
+  };
+}
+
+export async function getLeadSettings(userId: string) {
+  const workspaceId = await ensureWorkspace(userId);
+  const [row] = await getDb()`
+    select minimum_lead_score, ai_language, default_reply_tone, duplicate_window_hours,
+           monitored_game_ids, custom_keywords, negative_keywords
+    from user_lead_settings
+    where workspace_id = ${workspaceId} and user_id = ${userId}::uuid
+  `;
+  return row || {
+    minimum_lead_score: 0,
+    ai_language: "th",
+    default_reply_tone: "SHORT_FRIENDLY",
+    duplicate_window_hours: 168,
+    monitored_game_ids: [],
+    custom_keywords: {},
+    negative_keywords: [],
+  };
+}
+
+export async function saveLeadSettings(
+  userId: string,
+  input: {
+    minimumLeadScore: number;
+    aiLanguage: string;
+    defaultReplyTone: string;
+    duplicateWindowHours: number;
+    monitoredGameIds: string[];
+    negativeKeywords: string[];
+  }
+) {
+  const workspaceId = await ensureWorkspace(userId);
+  const db = getDb();
+  await db`
+    insert into user_lead_settings
+      (workspace_id, user_id, minimum_lead_score, ai_language, default_reply_tone,
+       duplicate_window_hours, monitored_game_ids, negative_keywords)
+    values
+      (${workspaceId}, ${userId}::uuid, ${input.minimumLeadScore}, ${input.aiLanguage},
+       ${input.defaultReplyTone}, ${input.duplicateWindowHours},
+       ${db.json(input.monitoredGameIds)}, ${db.json(input.negativeKeywords)})
+    on conflict (workspace_id, user_id) do update set
+      minimum_lead_score = excluded.minimum_lead_score,
+      ai_language = excluded.ai_language,
+      default_reply_tone = excluded.default_reply_tone,
+      duplicate_window_hours = excluded.duplicate_window_hours,
+      monitored_game_ids = excluded.monitored_game_ids,
+      negative_keywords = excluded.negative_keywords,
+      updated_at = now()
+  `;
+  return getLeadSettings(userId);
+}
