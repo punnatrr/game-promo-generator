@@ -248,31 +248,6 @@ export async function markAiFailed(userId: string, leadId: string, sourceHash: s
   });
 }
 
-export async function markAiFailed(
-  userId: string,
-  leadId: string,
-  sourceHash: string,
-  errorCode: string
-) {
-  const workspaceId = await readWorkspace(userId);
-  if (!workspaceId) return;
-  const db = getDb();
-  await db.begin(async (tx) => {
-    await tx`
-      insert into lead_ai_analysis
-        (lead_id, workspace_id, model, prompt_version, analysis_version, source_text_hash, status, result, error_code)
-      values
-        (${leadId}, ${workspaceId}, 'unavailable', 'lead-radar-v1', '1',
-         ${sourceHash}, 'FAILED', '{}'::jsonb, ${errorCode.slice(0, 64)})
-    `;
-    await tx`
-      update leads
-      set analysis_status = 'AI_FAILED', updated_at = now()
-      where id = ${leadId} and workspace_id = ${workspaceId}
-    `;
-  });
-}
-
 export async function listLeads(userId: string, filters: LeadListFilters = {}) {
   const workspaceId = await readWorkspace(userId);
   if (!workspaceId) return { items: [], page: 1, limit: 30, total: 0 };
