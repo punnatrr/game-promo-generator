@@ -11,7 +11,7 @@ type Lead = {
   game_id:string|null; game_name:string|null; game_slug:string|null; icon_url:string|null;
   detected_currency:string|null; detected_amount:number|null; detected_package:string|null;
   detected_location:string|null; ai_summary:string|null; analysis_status:string;
-  created_at:string; first_seen_at:string; follow_up_at:string|null; follow_up_note:string|null;
+  created_at:string; first_seen_at:string; follow_up_at:string|null; follow_up_note:string|null; is_saved:boolean;
 };
 type LeadDetail = {
   lead:Lead & Record<string,unknown>;
@@ -62,6 +62,7 @@ export default function LeadRadarPage(){
   const [gameId,setGameId]=useState("");
   const [query,setQuery]=useState("");
   const [minScore,setMinScore]=useState("");
+  const [savedOnly,setSavedOnly]=useState(false);
   const [showAdd,setShowAdd]=useState(false);
   const [leadText,setLeadText]=useState("");
   const [sourceUrl,setSourceUrl]=useState("");
@@ -74,8 +75,9 @@ export default function LeadRadarPage(){
     if(gameId)p.set("gameId",gameId);
     if(query.trim())p.set("q",query.trim());
     if(minScore)p.set("minScore",minScore);
+    if(savedOnly)p.set("saved","true");
     return p;
-  },[status,gameId,query,minScore]);
+  },[status,gameId,query,minScore,savedOnly]);
 
   const refresh=useCallback(async()=>{
     const data=await result(await fetch("/api/leads?"+params.toString(),{cache:"no-store"}));
@@ -191,6 +193,7 @@ export default function LeadRadarPage(){
           <button onClick={()=>setStatus("NEW")} className="rounded-xl px-3 py-2 text-left text-sm text-muted hover:bg-white/5">ใหม่</button>
           <button onClick={()=>setStatus("FOLLOW_UP")} className="rounded-xl px-3 py-2 text-left text-sm text-muted hover:bg-white/5">ต้องติดตาม</button>
           <button onClick={()=>setStatus("WON")} className="rounded-xl px-3 py-2 text-left text-sm text-muted hover:bg-white/5">ปิดการขาย</button>
+          <button onClick={()=>{setStatus("");setSavedOnly(value=>!value);}} className={"rounded-xl px-3 py-2 text-left text-sm "+(savedOnly?"bg-purple-400/15 text-purple-100":"text-muted hover:bg-white/5")}>บันทึกไว้</button>
         </div>
         <div className="mt-5 space-y-3">
           <input value={query} onChange={e=>setQuery(e.target.value)} className="ui-field w-full px-3 py-2 text-sm" placeholder="ค้นหา Lead"/>
@@ -250,6 +253,7 @@ export default function LeadRadarPage(){
             </section>
 
             <section className="border-t border-white/10 pt-5"><h3 className="text-sm font-bold">ทำต่อ</h3><div className="mt-3 grid grid-cols-2 gap-2">
+              <Button variant="secondary" disabled={busy} onClick={()=>void act(async()=>{await result(await fetch("/api/leads/"+selected+"/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({saved:!detail.lead.is_saved})}));await Promise.all([refresh(),loadDetail(selected)]);})}>{detail.lead.is_saved?"เอาออกจาก Saved":"บันทึก Lead"}</Button>
               {detail.lead.source_url?<a className="action-link secondary" target="_blank" rel="noreferrer" href={detail.lead.source_url}>เปิดต้นทาง</a>:<span className="action-link secondary opacity-40">ไม่มีลิงก์</span>}
               <select value={detail.lead.status} disabled={busy} onChange={e=>void changeStatus(e.target.value)} className="ui-field px-3 py-2 text-sm">
                 {STATUSES.map(value=><option key={value} value={value}>{STATUS_LABELS[value]}</option>)}
