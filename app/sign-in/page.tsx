@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { TextField } from "@/app/components/ui/text-field";
+import { Button } from "@/app/components/ui/button";
+import { StatusMessage } from "@/app/components/ui/status-message";
 
 export default function SignInPage() {
+  const submitting = useRef(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -10,6 +14,8 @@ export default function SignInPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (submitting.current) return;
+    submitting.current = true;
     setLoading(true);
     setMessage("");
 
@@ -28,59 +34,39 @@ export default function SignInPage() {
         return;
       }
 
-      window.location.href = "/";
+      const next = new URLSearchParams(window.location.search).get("next");
+      let last = "/";
+      try { const saved = localStorage.getItem("lazyai:last-studio"); if (saved && ["/", "/dashboard/motion", "/dashboard/frame", "/dashboard/ads"].includes(saved)) last = saved; } catch {}
+      window.location.href = next?.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : last;
     } catch (error) {
       console.error(error);
       setMessage("เข้าสู่ระบบไม่สำเร็จ");
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#050505] px-6 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-background px-6 text-white">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl"
       >
         <p className="mb-2 text-sm font-medium text-purple-300">LAZY-AI.GAME</p>
-        <h1 className="text-2xl font-black">เข้าสู่ระบบ</h1>
+        <h1 className="text-2xl font-semibold">เข้าสู่ระบบ</h1>
 
-        <label className="mt-6 block">
-          <span className="mb-2 block text-sm text-white/60">อีเมล</span>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-white/40"
-            required
-          />
-        </label>
+        <p className="mt-2 text-sm text-muted">กลับมาสร้างสื่อและจัดการงานของร้านคุณ</p>
+        <div className="mt-6 space-y-5">
 
-        <label className="mt-4 block">
-          <span className="mb-2 block text-sm text-white/60">รหัสผ่าน</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-white/40"
-            required
-          />
-        </label>
-
+        <TextField label="อีเมล" type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} required disabled={loading} placeholder="you@example.com" />
+        <TextField label="รหัสผ่าน" type="password" autoComplete="current-password"  value={password} onChange={e => setPassword(e.target.value)} required disabled={loading} />
+        </div>
         {message && (
-          <div className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-100">
-            {message}
-          </div>
+          <StatusMessage tone="error" className="mt-4">{message}</StatusMessage>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full rounded-2xl bg-purple-400 px-5 py-4 font-bold text-black transition hover:bg-purple-300 disabled:opacity-60"
-        >
-          {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
-        </button>
+        <Button type="submit" loading={loading} loadingLabel="กำลังเข้าสู่ระบบ…" fullWidth className="mt-6">เข้าสู่ระบบ</Button>
 
         <a
           href="/sign-up"

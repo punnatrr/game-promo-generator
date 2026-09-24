@@ -30,7 +30,7 @@ export function EventActions({
           href={officialSourceUrl}
           target="_blank"
           rel="noreferrer"
-          className="rounded-xl bg-cyan-300 px-4 py-3 text-sm font-black text-[#06101c] transition hover:bg-cyan-200"
+          className="rounded-xl bg-cyan-300 px-4 py-3 text-sm font-semibold text-[#06101c] transition hover:bg-cyan-200"
         >
           เปิดประกาศต้นทาง ↗
         </a>
@@ -38,14 +38,14 @@ export function EventActions({
       <button
         type="button"
         onClick={copyInfo}
-        className="rounded-xl border border-white/15 px-4 py-3 text-sm font-black text-slate-200 transition hover:border-white/30"
+        className="rounded-xl border border-white/15 px-4 py-3 text-sm font-semibold text-slate-200 transition hover:border-white/30"
       >
         {copied ? "คัดลอกแล้ว" : "คัดลอกข้อมูล"}
       </button>
       <button
         type="button"
         onClick={copyLink}
-        className="rounded-xl border border-white/15 px-4 py-3 text-sm font-black text-slate-200 transition hover:border-white/30"
+        className="rounded-xl border border-white/15 px-4 py-3 text-sm font-semibold text-slate-200 transition hover:border-white/30"
       >
         คัดลอกลิงก์
       </button>

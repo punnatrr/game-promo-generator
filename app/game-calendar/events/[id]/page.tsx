@@ -50,18 +50,18 @@ function ScoreCard({
   return (
     <article className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-black text-slate-200">{title}</h2>
-        <strong className="text-2xl font-black text-cyan-300">
+        <h2 className="text-sm font-semibold text-slate-200">{title}</h2>
+        <strong className="text-2xl font-semibold text-purple-300">
           {value.score}
         </strong>
       </div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
         <div
-          className="h-full rounded-full bg-cyan-300"
+          className="h-full rounded-full bg-purple-300"
           style={{ width: `${Math.max(0, Math.min(100, value.score))}%` }}
         />
       </div>
-      <ul className="mt-3 space-y-1 text-xs leading-5 text-slate-400">
+      <ul className="mt-3 space-y-1 text-xs leading-5 text-muted">
         {value.reasons.map((reason) => (
           <li key={reason}>• {reason}</li>
         ))}
@@ -126,7 +126,7 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
     : null;
 
   return (
-    <main className="min-h-screen bg-[#06101c] text-white">
+    <main className="min-h-screen bg-background text-white">
       {structuredData ? (
         <script
           type="application/ld+json"
@@ -136,22 +136,22 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
         />
       ) : null}
 
-      <header className="border-b border-white/10 bg-[#081827]">
+      <header className="border-b border-white/10 bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <Link
             href="/game-calendar"
-            className="text-sm font-black text-cyan-200 hover:text-cyan-100"
+            className="text-sm font-semibold text-purple-200 hover:text-purple-100"
           >
             ← ปฏิทินกิจกรรมเกม
           </Link>
-          <span className="text-xs font-bold text-slate-500">
+          <span className="text-xs font-bold text-muted">
             เวลา Asia/Bangkok
           </span>
         </div>
       </header>
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#091522]">
+        <section className="overflow-hidden rounded-3xl border border-white/10 bg-surface">
           {event.officialImage ? (
             <div className="relative aspect-[16/7] overflow-hidden bg-black/30">
               <img
@@ -164,8 +164,8 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
           ) : null}
 
           <div className="p-5 sm:p-8">
-            <div className="flex flex-wrap items-center gap-2 text-xs font-black">
-              <span className="rounded-full bg-cyan-300/15 px-3 py-1.5 text-cyan-100">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+              <span className="rounded-full bg-purple-300/15 px-3 py-1.5 text-purple-100">
                 {event.gameName}
               </span>
               <span className="rounded-full bg-white/10 px-3 py-1.5 text-slate-300">
@@ -181,7 +181,7 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
               ) : null}
             </div>
 
-            <h1 className="mt-5 max-w-4xl text-3xl font-black leading-tight sm:text-5xl">
+            <h1 className="mt-5 max-w-4xl text-3xl font-semibold leading-tight sm:text-5xl">
               {event.titleTh}
             </h1>
             <p className="mt-4 max-w-4xl text-base leading-8 text-slate-300">
@@ -212,28 +212,28 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
         <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
           <div className="space-y-6">
             <section className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
-              <h2 className="text-lg font-black">กำหนดการ</h2>
+              <h2 className="text-lg font-semibold">กำหนดการ</h2>
               <dl className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <dt className="text-xs font-bold text-slate-500">ประกาศ</dt>
+                  <dt className="text-xs font-bold text-muted">ประกาศ</dt>
                   <dd className="mt-1 text-sm font-bold">
                     {formatDate(event.announcementDate)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs font-bold text-slate-500">เริ่ม</dt>
+                  <dt className="text-xs font-bold text-muted">เริ่ม</dt>
                   <dd className="mt-1 text-sm font-bold">
                     {formatDate(event.startDate)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs font-bold text-slate-500">สิ้นสุด</dt>
+                  <dt className="text-xs font-bold text-muted">สิ้นสุด</dt>
                   <dd className="mt-1 text-sm font-bold">
                     {formatDate(event.endDate)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs font-bold text-slate-500">
+                  <dt className="text-xs font-bold text-muted">
                     ภูมิภาค / เซิร์ฟเวอร์
                   </dt>
                   <dd className="mt-1 text-sm font-bold">
@@ -241,8 +241,8 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
                   </dd>
                 </div>
                 <div className="sm:col-span-2">
-                  <dt className="text-xs font-bold text-slate-500">Countdown</dt>
-                  <dd className="mt-1 text-sm font-black text-cyan-200">
+                  <dt className="text-xs font-bold text-muted">Countdown</dt>
+                  <dd className="mt-1 text-sm font-semibold text-purple-200">
                     {countdown(event.startDate, event.endDate)}
                   </dd>
                 </div>
@@ -267,7 +267,7 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
             </section>
 
             <section className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
-              <h2 className="text-lg font-black">มุมคอนเทนต์ที่แนะนำ</h2>
+              <h2 className="text-lg font-semibold">มุมคอนเทนต์ที่แนะนำ</h2>
               <ul className="mt-4 grid gap-2 text-sm leading-6 text-slate-300">
                 {event.contentAngles.map((angle) => (
                   <li
@@ -283,8 +283,8 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
 
           <aside className="space-y-6">
             <section className="rounded-3xl border border-white/10 bg-white/[0.025] p-5">
-              <h2 className="text-lg font-black">แหล่งข้อมูล</h2>
-              <p className="mt-2 text-xs leading-5 text-slate-500">
+              <h2 className="text-lg font-semibold">แหล่งข้อมูล</h2>
+              <p className="mt-2 text-xs leading-5 text-muted">
                 ความน่าเชื่อถือ {event.confidenceScore}/100 · ตรวจล่าสุด{" "}
                 {formatDate(event.lastCheckedAt)}
               </p>
@@ -295,10 +295,10 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
                     href={url}
                     target="_blank"
                     rel="noreferrer"
-                    className="block break-all rounded-xl border border-white/10 p-3 text-xs font-bold leading-5 text-cyan-200 transition hover:border-cyan-300/40"
+                    className="block break-all rounded-xl border border-white/10 p-3 text-xs font-bold leading-5 text-purple-200 transition hover:border-purple-300/40"
                   >
                     {index === 0 ? "แหล่งหลัก" : `แหล่งยืนยัน ${index + 1}`} ↗
-                    <span className="mt-1 block font-normal text-slate-500">
+                    <span className="mt-1 block font-normal text-muted">
                       {url}
                     </span>
                   </a>
@@ -308,7 +308,7 @@ export default async function GameCalendarEventPage({ params }: PageProps) {
 
             {event.keywords.length ? (
               <section className="rounded-3xl border border-white/10 bg-white/[0.025] p-5">
-                <h2 className="text-sm font-black">คีย์เวิร์ด</h2>
+                <h2 className="text-sm font-semibold">คีย์เวิร์ด</h2>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {event.keywords.map((keyword) => (
                     <span

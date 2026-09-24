@@ -78,6 +78,8 @@ export default function AdminPaymentsPage() {
   }, []);
 
   async function actOnPayment(paymentId: string, action: "approve" | "reject") {
+    if (actingPaymentId) return;
+    if (!window.confirm(action === "approve" ? "ยืนยันอนุมัติการชำระเงินและเปิดแพ็กเกจให้สมาชิก?" : "ยืนยันปฏิเสธหลักฐานการชำระเงินนี้?")) return;
     setActingPaymentId(paymentId);
     setMessage("");
 
@@ -113,15 +115,15 @@ export default function AdminPaymentsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
+    <main className="min-h-screen bg-background px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="mb-3 text-sm font-medium text-purple-300">
               LAZY-AI.GAME Admin
             </p>
-            <h1 className="text-4xl font-black tracking-tight">
-              ตรวจ payment
+            <h1 className="text-4xl font-semibold tracking-tight">
+              ตรวจการชำระเงิน
             </h1>
           </div>
           <button
@@ -129,7 +131,7 @@ export default function AdminPaymentsPage() {
             onClick={loadPayments}
             className="rounded-2xl border border-white/10 px-5 py-3 font-bold text-white/70 transition hover:border-white/30 hover:text-white"
           >
-            Refresh
+            โหลดรายการใหม่
           </button>
         </div>
 
@@ -140,12 +142,12 @@ export default function AdminPaymentsPage() {
         )}
 
         {loading ? (
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 text-white/50">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 text-muted">
             กำลังโหลดรายการ...
           </div>
         ) : payments.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center text-white/45">
-            ไม่มี payment ที่รอตรวจ
+          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center text-muted">
+            ตรวจครบแล้ว ไม่มีรายการรอตรวจ
           </div>
         ) : (
           <div className="grid gap-4">
@@ -162,17 +164,17 @@ export default function AdminPaymentsPage() {
                         {payment.status}
                       </span>
                     </div>
-                    <p className="mt-2 text-sm text-white/45">
+                    <p className="mt-2 text-sm text-muted">
                       {payment.userEmail}
                     </p>
-                    <p className="mt-1 text-sm text-white/45">
+                    <p className="mt-1 text-sm text-muted">
                       {payment.method} ·{" "}
                       {new Date(payment.createdAt).toLocaleString("th-TH")}
                     </p>
                     <p className="mt-1 text-xs text-amber-200">
                       หมดอายุ {new Date(payment.expiresAt).toLocaleString("th-TH")}
                     </p>
-                    <p className="mt-4 text-3xl font-black text-purple-300">
+                    <p className="mt-4 text-3xl font-semibold text-purple-300">
                       ฿{payment.amountThb}
                     </p>
                   </div>
@@ -180,19 +182,19 @@ export default function AdminPaymentsPage() {
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <button
                       type="button"
-                      disabled={actingPaymentId === payment.id || !payment.hasProof}
+                      disabled={Boolean(actingPaymentId) || !payment.hasProof}
                       onClick={() => actOnPayment(payment.id, "approve")}
                       className="rounded-2xl bg-emerald-400 px-5 py-3 font-bold text-black transition hover:bg-emerald-300 disabled:opacity-60"
                     >
-                      Approve
+                      {actingPaymentId === payment.id ? "กำลังดำเนินการ…" : "อนุมัติการชำระเงิน"}
                     </button>
                     <button
                       type="button"
-                      disabled={actingPaymentId === payment.id}
+                      disabled={Boolean(actingPaymentId)}
                       onClick={() => actOnPayment(payment.id, "reject")}
                       className="rounded-2xl border border-red-300/30 px-5 py-3 font-bold text-red-200 transition hover:bg-red-400/10 disabled:opacity-60"
                     >
-                      Reject
+                      ปฏิเสธหลักฐาน
                     </button>
                   </div>
                 </div>
@@ -209,10 +211,10 @@ export default function AdminPaymentsPage() {
                       เปิดดูสลิปแบบ private
                     </a>
                   ) : (
-                    <p className="mt-2 text-white/40">ยังไม่มีหลักฐาน</p>
+                    <p className="mt-2 text-muted">ยังไม่มีหลักฐาน</p>
                   )}
                   {payment.proofNote && (
-                    <p className="mt-3 text-white/55">{payment.proofNote}</p>
+                    <p className="mt-3 text-muted">{payment.proofNote}</p>
                   )}
                 </div>
               </article>

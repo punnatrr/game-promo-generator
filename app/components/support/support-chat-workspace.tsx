@@ -274,14 +274,14 @@ export function SupportChatWorkspace({
     return (
       <div className="rounded-3xl border border-purple-300/20 bg-purple-300/[0.06] p-8 text-center">
         <div className="text-4xl">💬</div>
-        <h2 className="mt-4 text-2xl font-black">Human VIP Support</h2>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/55">
+        <h2 className="mt-4 text-2xl font-semibold">Human VIP Support</h2>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted">
           ส่งข้อความและรูปงานที่เจนแล้วไม่ถูกใจให้ทีมงานมนุษย์ช่วยตรวจและแก้ไขได้
           ฟีเจอร์นี้เปิดให้สมาชิกแพ็ก Business 999 เท่านั้น
         </p>
         <a
           href="/pricing"
-          className="mt-6 inline-flex rounded-xl bg-purple-300 px-5 py-3 font-black text-black transition hover:bg-purple-200"
+          className="mt-6 inline-flex rounded-xl bg-purple-300 px-5 py-3 font-semibold text-black transition hover:bg-purple-200"
         >
           ดูแพ็ก Business 999
         </a>
@@ -306,8 +306,8 @@ export function SupportChatWorkspace({
       >
         <div className="flex items-center justify-between border-b border-white/10 p-4">
           <div>
-            <h2 className="font-black">{isAdmin ? "Support Inbox" : "กล่องข้อความ"}</h2>
-            <p className="mt-1 text-xs text-white/40">อัปเดตอัตโนมัติทุก 15 วินาที</p>
+            <h2 className="font-semibold">{isAdmin ? "ข้อความจากสมาชิก" : "กล่องข้อความ"}</h2>
+            <p className="mt-1 text-xs text-muted">อัปเดตอัตโนมัติทุก 15 วินาที</p>
           </div>
           {!isAdmin && (
             <button
@@ -317,7 +317,7 @@ export function SupportChatWorkspace({
                 setSelectedId(null);
                 resetComposer();
               }}
-              className="rounded-xl bg-purple-300 px-3 py-2 text-xs font-black text-black hover:bg-purple-200"
+              className="rounded-xl bg-purple-300 px-3 py-2 text-xs font-semibold text-black hover:bg-purple-200"
             >
               + เปิดเคส
             </button>
@@ -332,9 +332,9 @@ export function SupportChatWorkspace({
           }
         >
           {loading ? (
-            <p className="p-5 text-sm text-white/40">กำลังโหลด...</p>
+            <p className="p-5 text-sm text-muted">กำลังโหลด...</p>
           ) : conversations.length === 0 ? (
-            <p className="p-6 text-center text-sm leading-6 text-white/40">
+            <p className="p-6 text-center text-sm leading-6 text-muted">
               {isAdmin ? "ยังไม่มีเคสที่ส่งเข้ามา" : "ยังไม่มีบทสนทนา กด “เปิดเคส” เพื่อเริ่มต้น"}
             </p>
           ) : (
@@ -354,7 +354,7 @@ export function SupportChatWorkspace({
                 <div className="flex items-start justify-between gap-3">
                   <p className="line-clamp-1 text-sm font-bold">{conversation.subject}</p>
                   {conversation.unreadCount > 0 && (
-                    <span className="min-w-5 rounded-full bg-fuchsia-400 px-1.5 py-0.5 text-center text-[10px] font-black text-black">
+                    <span className="min-w-5 rounded-full bg-fuchsia-400 px-1.5 py-0.5 text-center text-[10px] font-semibold text-black">
                       {conversation.unreadCount}
                     </span>
                   )}
@@ -364,14 +364,14 @@ export function SupportChatWorkspace({
                     {conversation.user.displayName || conversation.user.email}
                   </p>
                 )}
-                <p className="mt-2 line-clamp-1 text-xs text-white/35">
+                <p className="mt-2 line-clamp-1 text-xs text-muted">
                   {conversation.lastMessagePreview}
                 </p>
                 <div className="mt-3 flex items-center justify-between gap-2">
                   <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${statusClass(conversation.status)}`}>
                     {STATUS_LABEL[conversation.status]}
                   </span>
-                  <span className="text-[10px] text-white/25">
+                  <span className="text-[10px] text-muted">
                     {new Date(conversation.lastMessageAt).toLocaleDateString("th-TH")}
                   </span>
                 </div>
@@ -389,8 +389,8 @@ export function SupportChatWorkspace({
         {newConversation ? (
           <div className="flex flex-1 flex-col">
             <div className="border-b border-white/10 p-5">
-              <h2 className="text-xl font-black">เปิดเคสใหม่กับทีมงาน</h2>
-              <p className="mt-2 text-sm text-white/45">
+              <h2 className="text-xl font-semibold">เปิดเคสใหม่กับทีมงาน</h2>
+              <p className="mt-2 text-sm text-muted">
                 อธิบายจุดที่อยากแก้และแนบรูปที่เจนไม่ถูกใจได้สูงสุด 5 รูป
               </p>
             </div>
@@ -442,20 +442,21 @@ export function SupportChatWorkspace({
             />
           </div>
         ) : !selectedConversation ? (
-          <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-white/40">
+          <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-muted">
             เลือกบทสนทนาเพื่อดูข้อความ
           </div>
         ) : (
           <>
             <div className="flex flex-col gap-3 border-b border-white/10 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="font-black">{selectedConversation.subject}</h2>
+                <h2 className="font-semibold">{selectedConversation.subject}</h2>
                 {selectedConversation.user && (
-                  <p className="mt-1 text-xs text-white/40">{selectedConversation.user.email}</p>
+                  <p className="mt-1 text-xs text-muted">{selectedConversation.user.email}</p>
                 )}
               </div>
               {isAdmin ? (
                 <select
+                  aria-label="สถานะการช่วยเหลือ"
                   value={selectedConversation.status}
                   onChange={(event) => void updateStatus(event.target.value as SupportStatus)}
                   className="rounded-xl border border-white/10 bg-[#15141b] px-3 py-2 text-xs font-bold outline-none"
@@ -473,7 +474,7 @@ export function SupportChatWorkspace({
 
             <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
               {threadLoading ? (
-                <p className="text-sm text-white/40">กำลังโหลดข้อความ...</p>
+                <p className="text-sm text-muted">กำลังโหลดข้อความ...</p>
               ) : (
                 messages.map((item) => {
                   const mine = isAdmin ? item.senderRole === "admin" : item.senderRole === "user";
@@ -508,7 +509,7 @@ export function SupportChatWorkspace({
                             ))}
                           </div>
                         )}
-                        <p className={`mt-2 text-[10px] ${mine ? "text-black/45" : "text-white/30"}`}>
+                        <p className={`mt-2 text-[10px] ${mine ? "text-black/45" : "text-muted"}`}>
                           {new Date(item.createdAt).toLocaleString("th-TH")}
                         </p>
                       </div>
@@ -532,7 +533,7 @@ export function SupportChatWorkspace({
         )}
 
         {notice && (
-          <div className="border-t border-red-300/20 bg-red-300/10 px-4 py-3 text-sm text-red-100">
+          <div role="alert" className="border-t border-red-300/20 bg-red-300/10 px-4 py-3 text-sm text-red-100">
             {notice}
           </div>
         )}
@@ -576,12 +577,14 @@ function Composer({
       )}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <textarea
+          aria-label="ข้อความถึงทีมงาน"
+          disabled={sending}
           value={message}
           maxLength={4000}
           onChange={(event) => onMessageChange(event.target.value)}
           placeholder="พิมพ์รายละเอียดที่ต้องการให้ช่วยแก้..."
           rows={3}
-          className="min-h-24 flex-1 resize-none rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-sm leading-6 outline-none placeholder:text-white/30 focus:border-purple-300/60"
+          className="min-h-24 flex-1 resize-none rounded-xl border border-white/10 bg-black/45 px-4 py-3 text-sm leading-6 outline-none placeholder:text-muted focus:border-purple-300/60"
         />
         <div className="flex gap-2 sm:flex-col">
           <label className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-xl border border-white/10 px-4 text-sm font-bold text-white/65 transition hover:border-purple-300/40 hover:text-white">
@@ -589,6 +592,7 @@ function Composer({
             <input
               key={fileInputKey}
               type="file"
+              disabled={sending}
               accept="image/png,image/jpeg,image/webp"
               multiple
               className="sr-only"
@@ -598,13 +602,13 @@ function Composer({
           <button
             type="submit"
             disabled={sending || disabled}
-            className="min-h-11 flex-1 rounded-xl bg-purple-300 px-5 text-sm font-black text-black transition hover:bg-purple-200 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 flex-1 rounded-xl bg-purple-300 px-5 text-sm font-semibold text-black transition hover:bg-purple-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {sending ? "กำลังส่ง..." : "ส่งข้อความ"}
           </button>
         </div>
       </div>
-      <p className="mt-2 text-[11px] text-white/30">แนบได้สูงสุด 5 รูป · JPG, PNG, WebP · รวมไม่เกิน 4 MB</p>
+      <p className="mt-2 text-[11px] text-muted">แนบได้สูงสุด 5 รูป · JPG, PNG, WebP · รวมไม่เกิน 4 MB</p>
     </form>
   );
 }

@@ -25,7 +25,7 @@ export default function GameCalendarPage() {
   return (
     <Suspense
       fallback={
-        <main className="grid min-h-screen place-items-center bg-[#06101c] text-slate-300">
+        <main className="grid min-h-screen place-items-center bg-background text-slate-300">
           กำลังเปิดปฏิทินกิจกรรมเกม...
         </main>
       }

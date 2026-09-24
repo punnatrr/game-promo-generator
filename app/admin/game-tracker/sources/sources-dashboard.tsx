@@ -146,15 +146,15 @@ export function GameContentSources() {
   }
 
   return (
-    <main className="min-h-screen bg-[#07101d] px-4 py-7 text-white sm:px-6">
+    <main className="min-h-screen bg-background px-4 py-7 text-white sm:px-6">
       <section className="mx-auto max-w-7xl">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-300">
               LAZY TOPUP · GAME CONTENT
             </p>
-            <h1 className="mt-2 text-3xl font-black">จัดการแหล่งข้อมูล</h1>
-            <p className="mt-2 text-sm text-slate-400">
+            <h1 className="mt-2 text-3xl font-semibold">จัดการแหล่งข้อมูล</h1>
+            <p className="mt-2 text-sm text-muted">
               ใช้ API, RSS หรือ Public Feed ก่อน scraping และไม่หลบระบบป้องกันเว็บไซต์
             </p>
           </div>
@@ -174,9 +174,9 @@ export function GameContentSources() {
 
         <form
           onSubmit={addSource}
-          className="mt-6 rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.05] p-5"
+          className="mt-6 rounded-3xl border border-purple-300/20 bg-purple-300/[0.05] p-5"
         >
-          <h2 className="text-xl font-black">เพิ่ม Source URL</h2>
+          <h2 className="text-xl font-semibold">เพิ่มลิงก์แหล่งข้อมูล</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
             <FieldSelect
               label="เกม"
@@ -219,7 +219,7 @@ export function GameContentSources() {
                 required
               />
               <label>
-                <span className="mb-1.5 block text-xs font-bold text-slate-400">
+                <span className="mb-1.5 block text-xs font-bold text-muted">
                   Trust
                 </span>
                 <input
@@ -228,7 +228,7 @@ export function GameContentSources() {
                   max={100}
                   value={credibility}
                   onChange={(event) => setCredibility(Number(event.target.value))}
-                  className="min-h-11 w-full rounded-xl border border-white/10 bg-[#07101d] px-3 text-sm outline-none"
+                  className="min-h-11 w-full rounded-xl border border-white/10 bg-background px-3 text-sm outline-none"
                 />
               </label>
             </div>
@@ -236,14 +236,14 @@ export function GameContentSources() {
           <button
             type="submit"
             disabled={saving || !gameId}
-            className="mt-4 rounded-xl bg-cyan-300 px-5 py-3 text-sm font-black text-[#06111f] disabled:opacity-40"
+            className="mt-4 rounded-xl bg-purple-300 px-5 py-3 text-sm font-semibold text-[#06111f] disabled:opacity-40"
           >
             {saving ? "กำลังบันทึก..." : "เพิ่มแหล่งข้อมูล"}
           </button>
         </form>
 
         <section className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035]">
-          <div className="grid min-w-[950px] grid-cols-[1fr_1.2fr_1.7fr_0.7fr_0.8fr_0.8fr] border-b border-white/10 px-4 py-3 text-xs font-black uppercase text-slate-500">
+          <div className="grid min-w-[950px] grid-cols-[1fr_1.2fr_1.7fr_0.7fr_0.8fr_0.8fr] border-b border-white/10 px-4 py-3 text-xs font-semibold uppercase text-muted">
             <span>Game</span>
             <span>Source</span>
             <span>URL</span>
@@ -254,9 +254,9 @@ export function GameContentSources() {
           <div className="overflow-x-auto">
             <div className="min-w-[950px] divide-y divide-white/10">
               {loading ? (
-                <p className="p-6 text-sm text-slate-400">กำลังโหลด...</p>
+                <p className="p-6 text-sm text-muted">กำลังโหลด...</p>
               ) : sources.length === 0 ? (
-                <p className="p-10 text-center text-sm text-slate-400">
+                <p className="p-10 text-center text-sm text-muted">
                   ยังไม่มี Source — เพิ่ม URL ทางการของเกมเพื่อเริ่มติดตาม
                 </p>
               ) : (
@@ -268,7 +268,7 @@ export function GameContentSources() {
                     <span className="font-bold">{source.gameName}</span>
                     <span>
                       <strong className="block">{source.name}</strong>
-                      <small className="text-slate-500">
+                      <small className="text-muted">
                         Trust {source.credibilityScore}/100 · {source.language}
                       </small>
                       <small
@@ -294,14 +294,14 @@ export function GameContentSources() {
                       href={source.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="truncate text-cyan-300/75 underline underline-offset-4"
+                      className="truncate text-purple-300/75 underline underline-offset-4"
                     >
                       {source.url}
                     </a>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-muted">
                       {SOURCE_LABELS[source.sourceType]}
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-muted">
                       {source.lastCheckedAt
                         ? new Intl.DateTimeFormat("th-TH", {
                             dateStyle: "short",
@@ -314,10 +314,10 @@ export function GameContentSources() {
                       <button
                         type="button"
                         onClick={() => toggleSource(source)}
-                        className={`rounded-lg px-3 py-2 text-xs font-black ${
+                        className={`rounded-lg px-3 py-2 text-xs font-semibold ${
                           source.isActive
                             ? "bg-emerald-300 text-[#06111f]"
-                            : "bg-white/10 text-slate-400"
+                            : "bg-white/10 text-muted"
                         }`}
                       >
                         {source.isActive ? "กำลังติดตาม" : "ปิดอยู่"}
@@ -326,7 +326,7 @@ export function GameContentSources() {
                         type="button"
                         disabled={testingId === source.id}
                         onClick={() => testSource(source)}
-                        className="rounded-lg border border-cyan-300/25 px-3 py-2 text-xs font-black text-cyan-200 disabled:opacity-40"
+                        className="rounded-lg border border-purple-300/25 px-3 py-2 text-xs font-semibold text-purple-200 disabled:opacity-40"
                       >
                         {testingId === source.id ? "กำลังทดสอบ..." : "ทดสอบดึง"}
                       </button>
@@ -357,7 +357,7 @@ function FieldInput({
 }) {
   return (
     <label>
-      <span className="mb-1.5 block text-xs font-bold text-slate-400">
+      <span className="mb-1.5 block text-xs font-bold text-muted">
         {label}
       </span>
       <input
@@ -365,7 +365,7 @@ function FieldInput({
         value={value}
         required={required}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-11 w-full rounded-xl border border-white/10 bg-[#07101d] px-3 text-sm outline-none focus:border-cyan-300"
+        className="min-h-11 w-full rounded-xl border border-white/10 bg-background px-3 text-sm outline-none focus:border-purple-300"
       />
     </label>
   );
@@ -384,13 +384,13 @@ function FieldSelect({
 }) {
   return (
     <label>
-      <span className="mb-1.5 block text-xs font-bold text-slate-400">
+      <span className="mb-1.5 block text-xs font-bold text-muted">
         {label}
       </span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-11 w-full rounded-xl border border-white/10 bg-[#07101d] px-3 text-sm outline-none focus:border-cyan-300"
+        className="min-h-11 w-full rounded-xl border border-white/10 bg-background px-3 text-sm outline-none focus:border-purple-300"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

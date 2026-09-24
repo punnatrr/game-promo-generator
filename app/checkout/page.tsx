@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { PageHeader, Steps, Skeleton, EmptyState } from "@/app/components/ui/workspace";
+import { StatusMessage } from "@/app/components/ui/status-message";
 import type { SubscriptionPlan } from "@/lib/subscription/plans";
 
 type PaymentMethod = "promptpay" | "bank_transfer";
@@ -52,6 +54,10 @@ export default function CheckoutPage() {
   const [proofNote, setProofNote] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [needsLogin, setNeedsLogin] = useState(false);
+  const [tone, setTone] = useState<"error" | "success">("error");
+  const submitting = useRef(false);
 
   async function loadPayments() {
     const res = await fetch("/api/payments/me", { cache: "no-store" });
@@ -66,6 +72,8 @@ export default function CheckoutPage() {
         fetch("/api/plans"),
         fetch("/api/payments/me", { cache: "no-store" }),
       ]);
+      if (paymentsRes.status === 401) setNeedsLogin(true);
+      if (!plansRes.ok) throw new Error("โหลดแพ็กเกจไม่สำเร็จ");
       const plansData = await plansRes.json();
       setPlans(plansData.plans || []);
       if (paymentsRes.ok) {
@@ -75,8 +83,8 @@ export default function CheckoutPage() {
     }
     loadPage().catch((error) => {
       console.error(error);
-      setMessage("โหลดข้อมูลชำระเงินไม่สำเร็จ");
-    });
+      setMessage("โหลดข้อมูลชำระเงินไม่สำเร็จ กรุณาลองโหลดหน้านี้อีกครั้ง");
+    }).finally(() => setInitialLoading(false));
   }, []);
 
   const selectedPlan = useMemo(
@@ -85,7 +93,9 @@ export default function CheckoutPage() {
   );
 
   async function createPayment() {
-    if (!selectedPlan) return;
+    if (!selectedPlan || submitting.current) return;
+    submitting.current = true;
+    setTone("error");
     setLoading(true);
     setMessage("");
 
@@ -111,12 +121,15 @@ export default function CheckoutPage() {
       console.error(error);
       setMessage("สร้างรายการชำระเงินไม่สำเร็จ");
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   }
 
   async function submitProof() {
-    if (!payment || !proofFile) return;
+    if (!payment || !proofFile || submitting.current) return;
+    submitting.current = true;
+    setTone("error");
     setLoading(true);
     setMessage("");
 
@@ -128,7 +141,8 @@ export default function CheckoutPage() {
 
       const res = await fetch("/api/payments/proof", { method: "POST", body: form });
       const data = await res.json();
-      setMessage(data.message || data.error || "ส่งหลักฐานแล้ว");
+      setTone(res.ok ? "success" : "error");
+      setMessage(res.ok ? data.message || "ส่งหลักฐานแล้ว รอทีมงานตรวจสอบ" : data.error || "ส่งหลักฐานไม่สำเร็จ กรุณาลองอีกครั้ง");
       if (res.ok) {
         setPayment((current) =>
           current
@@ -145,29 +159,27 @@ export default function CheckoutPage() {
       console.error(error);
       setMessage("ส่งหลักฐานไม่สำเร็จ");
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
+    <main className="min-h-screen bg-background px-6 py-10 text-white">
       <section className="mx-auto max-w-5xl">
-        <div className="mb-8">
-          <p className="mb-3 text-sm font-medium text-purple-300">LAZY-AI.GAME Payment</p>
-          <h1 className="text-4xl font-black tracking-tight">ชำระเงินแพ็กเกจ</h1>
-          <p className="mt-3 max-w-2xl text-white/50">
-            สร้างรายการ สแกน PromptPay หรือโอนเงิน แล้วอัปโหลดสลิปเพื่อให้ผู้ดูแลตรวจสอบ
-            รายการที่อนุมัติแล้วจะเปิดสิทธิ์ใช้งาน 30 วัน
-          </p>
-        </div>
-
+        <PageHeader title="ชำระเงินแพ็กเกจ" description="เลือกแพ็กเกจ ชำระเงิน แล้วส่งสลิปให้ทีมงานตรวจสอบ" />
+        <Steps labels={["เลือกแพ็กเกจ", "ชำระและส่งสลิป", "รอตรวจสอบ"]} current={payment?.payment.hasProof ? 2 : payment ? 1 : 0} />
+        {initialLoading && <Skeleton label="กำลังโหลดแพ็กเกจและรายการชำระเงิน" />}
+        {needsLogin && <EmptyState title="เข้าสู่ระบบก่อนชำระเงิน" description="แพ็กเกจที่ชำระจะผูกกับบัญชีของคุณ" href="/sign-in" action="เข้าสู่ระบบ" />}
+        {message && <StatusMessage tone={tone} className="my-5">{message}</StatusMessage>}
         <div className="grid gap-5 lg:grid-cols-[1fr_1.1fr]">
           <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
             <h2 className="text-xl font-bold">เลือกรายการ</h2>
             <label className="mt-5 block">
               <span className="mb-2 block text-sm text-white/60">แพ็กเกจ</span>
               <select
-                value={selectedPlanSlug}
+                disabled={loading}
+                value={selectedPlan?.slug || selectedPlanSlug}
                 onChange={(event) => setSelectedPlanSlug(event.target.value)}
                 className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition focus:border-white/40"
               >
@@ -186,6 +198,8 @@ export default function CheckoutPage() {
                   <button
                     key={value}
                     type="button"
+                    aria-pressed={method === value}
+                    disabled={loading}
                     onClick={() => setMethod(value)}
                     className={`rounded-2xl border px-4 py-3 font-bold transition ${
                       method === value
@@ -203,24 +217,20 @@ export default function CheckoutPage() {
               <div className="mt-5 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/65">
                 <p className="font-bold text-white">{selectedPlan.name}</p>
                 <p className="mt-1">{selectedPlan.description}</p>
-                <p className="mt-3 text-2xl font-black text-purple-300">฿{selectedPlan.priceMonthlyThb}</p>
+                <p className="mt-3 text-2xl font-semibold text-purple-300">฿{selectedPlan.priceMonthlyThb}</p>
               </div>
             )}
 
             <button
               type="button"
               onClick={createPayment}
-              disabled={loading || !selectedPlan}
+              disabled={loading || !selectedPlan || initialLoading || needsLogin}
               className="mt-5 w-full rounded-2xl bg-purple-400 px-5 py-4 font-bold text-black transition hover:bg-purple-300 disabled:opacity-60"
             >
               {loading ? "กำลังดำเนินการ..." : "สร้างรายการชำระเงิน"}
             </button>
 
-            {message && (
-              <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-4 text-sm text-yellow-100">
-                {message}
-              </div>
-            )}
+
           </section>
 
           <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
@@ -228,9 +238,9 @@ export default function CheckoutPage() {
             {payment ? (
               <div className="mt-5 space-y-4">
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="text-sm text-white/45">ยอดชำระ</p>
-                  <p className="mt-1 text-4xl font-black">฿{payment.payment.amountThb}</p>
-                  <p className="mt-2 break-all text-sm text-white/50">รหัสรายการ: {payment.payment.id}</p>
+                  <p className="text-sm text-muted">ยอดชำระ</p>
+                  <p className="mt-1 text-4xl font-semibold">฿{payment.payment.amountThb}</p>
+                  <p className="mt-2 break-all text-sm text-muted">รหัสรายการ: {payment.payment.id}</p>
                   <p className="mt-1 text-sm text-amber-200">
                     ชำระภายใน {new Date(payment.payment.expiresAt).toLocaleString("th-TH")}
                   </p>
@@ -255,23 +265,25 @@ export default function CheckoutPage() {
                   </div>
                 ) : (
                   <>
-                    <PaymentLine label="ธนาคาร" value={payment.instructions.bankName || "ยังไม่ได้ตั้งค่า BANK_NAME"} />
-                    <PaymentLine label="ชื่อบัญชี" value={payment.instructions.bankAccountName || "ยังไม่ได้ตั้งค่า BANK_ACCOUNT_NAME"} />
-                    <PaymentLine label="เลขบัญชี" value={payment.instructions.bankAccountNumber || "ยังไม่ได้ตั้งค่า BANK_ACCOUNT_NUMBER"} />
+                    <PaymentLine label="ธนาคาร" value={payment.instructions.bankName || "ยังไม่มีข้อมูล กรุณาติดต่อทีมงานก่อนโอน"} />
+                    <PaymentLine label="ชื่อบัญชี" value={payment.instructions.bankAccountName || "ยังไม่มีข้อมูล กรุณาติดต่อทีมงานก่อนโอน"} />
+                    <PaymentLine label="เลขบัญชี" value={payment.instructions.bankAccountNumber || "ยังไม่มีข้อมูล กรุณาติดต่อทีมงานก่อนโอน"} />
                   </>
                 )}
 
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
                   <h3 className="font-bold">อัปโหลดหลักฐานการชำระเงิน</h3>
-                  <p className="mt-1 text-xs text-white/45">JPG, PNG หรือ WebP ขนาดไม่เกิน 4 MB</p>
+                  <p className="mt-1 text-xs text-muted">JPG, PNG หรือ WebP ขนาดไม่เกิน 4 MB</p>
                   <input
                     type="file"
+                    aria-label="หลักฐานการชำระเงิน"
+                    disabled={loading}
                     accept="image/jpeg,image/png,image/webp"
-                    onChange={(event) => setProofFile(event.target.files?.[0] || null)}
+                    onChange={(event) => { const file = event.target.files?.[0]; if (file && (file.size > 4 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp"].includes(file.type))) { setTone("error"); setMessage("เลือกสลิป JPG, PNG หรือ WebP ขนาดไม่เกิน 4 MB"); setProofFile(null); event.target.value = ""; return; } setProofFile(file || null); }}
                     className="mt-4 block w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-white"
                   />
                   <label className="mt-4 block">
-                    <span className="mb-2 block text-sm text-white/50">หมายเหตุ (ถ้ามี)</span>
+                    <span className="mb-2 block text-sm text-muted">หมายเหตุ (ถ้ามี)</span>
                     <textarea
                       value={proofNote}
                       onChange={(event) => setProofNote(event.target.value)}
@@ -284,14 +296,14 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={submitProof}
                     disabled={loading || !proofFile || payment.payment.status !== "pending"}
-                    className="mt-4 w-full rounded-2xl bg-emerald-400 px-5 py-4 font-bold text-black transition hover:bg-emerald-300 disabled:opacity-60"
+                    className="ui-primary mt-4 w-full rounded-xl px-5 py-4 font-medium disabled:opacity-60"
                   >
-                    {payment.payment.hasProof ? "อัปโหลดสลิปใหม่" : "ส่งหลักฐาน"}
+                    {loading ? "กำลังส่งหลักฐาน…" : payment.payment.hasProof ? "อัปโหลดสลิปใหม่" : "ส่งหลักฐาน"}
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-white/35">
+              <div className="mt-5 rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-muted">
                 สร้างรายการชำระเงินก่อน แล้วรายละเอียดจะปรากฏที่นี่
               </div>
             )}
@@ -301,7 +313,7 @@ export default function CheckoutPage() {
         <section className="mt-5 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
           <h2 className="text-xl font-bold">ประวัติการชำระเงิน</h2>
           {payments.length === 0 ? (
-            <p className="mt-4 text-sm text-white/40">ยังไม่มีรายการชำระเงิน</p>
+            <p className="mt-4 text-sm text-muted">ยังไม่มีรายการชำระเงิน</p>
           ) : (
             <div className="mt-4 grid gap-3">
               {payments.map((item) => (
@@ -309,7 +321,7 @@ export default function CheckoutPage() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-bold">{item.planName} · ฿{item.amountThb}</p>
-                      <p className="mt-1 text-xs text-white/45">
+                      <p className="mt-1 text-xs text-muted">
                         {new Date(item.createdAt).toLocaleString("th-TH")} · {item.method}
                       </p>
                       {item.status === "pending" && (
@@ -347,7 +359,7 @@ export default function CheckoutPage() {
 function PaymentLine({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-      <p className="text-sm text-white/45">{label}</p>
+      <p className="text-sm text-muted">{label}</p>
       <p className="mt-1 break-all text-lg font-bold">{value}</p>
     </div>
   );

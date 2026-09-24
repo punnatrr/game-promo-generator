@@ -81,7 +81,7 @@ export function RadioGroup<T extends RadioValue>({
               <span>
                 <span className="font-medium text-white/90">{option.label}</span>
                 {option.description && (
-                  <span className="ml-2 text-white/45">{option.description}</span>
+                  <span className="ml-2 text-muted">{option.description}</span>
                 )}
               </span>
             </label>

@@ -1,10 +1,11 @@
 import sharp,{type OverlayOptions} from 'sharp';
+import path from 'node:path';
 import {CONTACT_LABELS,type BrandProfile} from '../brand/model';
 import {parseFrame,validateFrameBrand,type FramePlan} from './model';
 const escape=(value:string)=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]!));
 async function textImage(value:string,width:number,height:number,size:number,color='#ffffff'){
-  const fontfile=process.env.FRAME_FONT_PATH||(process.platform==='win32'?'C:/Windows/Fonts/tahoma.ttf':undefined);
-  const result=await sharp({text:{text:`<span foreground="${color}">${escape(value)}</span>`,font:'Tahoma '+size,fontfile,width,rgba:true,align:'center',wrap:'word-char'}}).png().toBuffer();
+  const fontfile=process.env.FRAME_FONT_PATH||path.join(process.cwd(),'node_modules/@expo-google-fonts/prompt/400Regular/Prompt_400Regular.ttf');
+  const result=await sharp({text:{text:`<span foreground="${color}">${escape(value)}</span>`,font:'Prompt '+size,fontfile,width,rgba:true,align:'center',wrap:'word-char'}}).png().toBuffer();
   return sharp(result).resize(width,height,{fit:'inside',withoutEnlargement:true}).png().toBuffer({resolveWithObject:true});
 }
 export async function frameArtwork(image:Buffer,input:FramePlan,brand:BrandProfile,logo?:Buffer){

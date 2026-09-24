@@ -1,6 +1,9 @@
 .env*
 .agents/
+.codex/
+.codex-remote-attachments/
 production-recovery/
+s.href)
 *.log
 .test-build/
 *.tsbuildinfo

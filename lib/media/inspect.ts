@@ -4,6 +4,7 @@ import { promisify } from 'node:util';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { ffprobeBinary } from './ffprobe';
 const exec = promisify(execFile);
 export class InvalidMedia extends Error {}
 export async function inspectMedia(bytes: Buffer, kind: string) {
@@ -20,7 +21,7 @@ export async function inspectMedia(bytes: Buffer, kind: string) {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'lazyai-media-'));
   try {
     const file = path.join(dir, 'input'); await writeFile(file, bytes);
-    const { stdout } = await exec(process.env.FFPROBE_PATH || 'ffprobe', ['-v','error','-protocol_whitelist','file','-format_whitelist','mov,matroska,webm','-show_entries','format=duration,format_name:stream=codec_type,width,height','-of','json',file], { timeout: 30_000, maxBuffer: 256_000, windowsHide: true });
+    const { stdout } = await exec(ffprobeBinary(), ['-v','error','-protocol_whitelist','file','-format_whitelist','mov,matroska,webm','-show_entries','format=duration,format_name:stream=codec_type,width,height','-of','json',file], { timeout: 30_000, maxBuffer: 256_000, windowsHide: true });
     const result = JSON.parse(stdout); const video = result.streams?.find((s: { codec_type: string }) => s.codec_type === 'video');
     const duration = Number(result.format?.duration); const format = String(result.format?.format_name || '');
     if (!video || !Number.isFinite(duration) || duration <= 0 || duration > 120 || !Number.isInteger(video.width) || !Number.isInteger(video.height) || video.width <= 0 || video.height <= 0 || video.width * video.height > 16_777_216 || !/(mov|mp4|webm|matroska)/.test(format)) throw new InvalidMedia('invalid_video');

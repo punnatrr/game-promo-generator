@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type NotificationItem = {
   id: string;
@@ -21,6 +21,19 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function dismiss(event: PointerEvent) { if (!container.current?.contains(event.target as Node)) setOpen(false); }
+    function escape(event: KeyboardEvent) { if (event.key === "Escape") { setOpen(false); trigger.current?.focus(); } }
+    document.addEventListener("pointerdown", dismiss);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", dismiss); document.removeEventListener("keydown", escape); };
+  }, [open]);
 
   const loadNotifications = useCallback(async () => {
     try {
@@ -44,18 +57,31 @@ export function NotificationBell() {
   }, [loadNotifications]);
 
   async function markAllRead() {
-    await fetch("/api/notifications", {
+    if (busy) return;
+    setBusy(true); setError("");
+    try {
+    const response = await fetch("/api/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),
     });
+    if (!response.ok) throw new Error();
     setUnreadCount(0);
     setNotifications((items) =>
       items.map((item) => ({ ...item, readAt: item.readAt || new Date().toISOString() }))
     );
+    } catch { setError("บันทึกสถานะไม่สำเร็จ กรุณาลองอีกครั้ง"); }
+    finally { setBusy(false); }
   }
 
   async function markOneRead(id: string) {
+    try {
+    const response = await fetch("/api/notifications", {
+      method: "PATCH", keepalive: true,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (!response.ok) return;
     const wasUnread = notifications.some((item) => item.id === id && !item.readAt);
     setNotifications((items) =>
       items.map((item) =>
@@ -63,17 +89,14 @@ export function NotificationBell() {
       )
     );
     if (wasUnread) setUnreadCount((count) => Math.max(0, count - 1));
-    await fetch("/api/notifications", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
+    } catch { /* Notification navigation should still work if marking read fails. */ }
   }
 
   return (
-    <div className="relative">
+    <div ref={container} className="relative">
       <button
         type="button"
+        ref={trigger}
         aria-label="การแจ้งเตือน"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
@@ -81,7 +104,7 @@ export function NotificationBell() {
       >
         <span aria-hidden>🔔</span>
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-fuchsia-400 px-1.5 py-0.5 text-center text-[10px] font-black text-black">
+          <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-fuchsia-400 px-1.5 py-0.5 text-center text-[10px] font-semibold text-black">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -94,17 +117,20 @@ export function NotificationBell() {
             {unreadCount > 0 && (
               <button
                 type="button"
+                disabled={busy}
                 onClick={markAllRead}
                 className="text-xs font-bold text-purple-300 hover:text-purple-200"
               >
-                อ่านทั้งหมดแล้ว
+                {busy ? "กำลังบันทึก…" : "อ่านทั้งหมดแล้ว"}
               </button>
             )}
           </div>
 
+          {error && <p role="alert" className="px-4 py-3 text-sm text-rose-200">{error}</p>}
+
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <p className="p-6 text-center text-sm text-white/40">ยังไม่มีการแจ้งเตือน</p>
+              <p className="p-6 text-center text-sm text-muted">ยังไม่มีการแจ้งเตือน</p>
             ) : (
               notifications.map((notification) => (
                 <a
@@ -121,10 +147,10 @@ export function NotificationBell() {
                     )}
                     <div className="min-w-0">
                       <p className="text-sm font-bold">{notification.title}</p>
-                      <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/50">
+                      <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted">
                         {notification.message}
                       </p>
-                      <p className="mt-1 text-[11px] text-white/30">
+                      <p className="mt-1 text-[11px] text-muted">
                         {new Date(notification.createdAt).toLocaleString("th-TH")}
                       </p>
                     </div>

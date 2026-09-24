@@ -102,15 +102,15 @@ export function GameContentGames() {
   }
 
   return (
-    <main className="min-h-screen bg-[#07101d] px-4 py-7 text-white sm:px-6">
+    <main className="min-h-screen bg-background px-4 py-7 text-white sm:px-6">
       <section className="mx-auto max-w-6xl">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-300">
               LAZY TOPUP · GAME CONTENT
             </p>
-            <h1 className="mt-2 text-3xl font-black">Game Catalog</h1>
-            <p className="mt-2 text-sm text-slate-400">
+            <h1 className="mt-2 text-3xl font-semibold">รายชื่อเกม</h1>
+            <p className="mt-2 text-sm text-muted">
               เปิด ปิด เพิ่ม หรือลบเกมได้โดยไม่แก้ source code
             </p>
           </div>
@@ -130,37 +130,40 @@ export function GameContentGames() {
 
         <form
           onSubmit={addGame}
-          className="mt-6 grid gap-3 rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.05] p-4 md:grid-cols-[1fr_1.2fr_1.5fr_auto]"
+          className="mt-6 grid gap-3 rounded-2xl border border-purple-300/20 bg-purple-300/[0.05] p-4 md:grid-cols-[1fr_1.2fr_1.5fr_auto]"
         >
           <input
             value={slug}
             onChange={(event) => setSlug(event.target.value)}
+            aria-label="slug เช่น delta-force"
             placeholder="slug เช่น delta-force"
             required
-            className="min-h-11 rounded-xl border border-white/10 bg-[#07101d] px-3 text-sm outline-none"
+            className="min-h-11 rounded-xl border border-white/10 bg-background px-3 text-sm outline-none"
           />
           <input
             value={name}
             onChange={(event) => setName(event.target.value)}
+            aria-label="ชื่อเกม"
             placeholder="ชื่อเกม"
             required
-            className="min-h-11 rounded-xl border border-white/10 bg-[#07101d] px-3 text-sm outline-none"
+            className="min-h-11 rounded-xl border border-white/10 bg-background px-3 text-sm outline-none"
           />
           <input
             value={iconUrl}
             onChange={(event) => setIconUrl(event.target.value)}
+            aria-label="Icon HTTPS URL (ไม่บังคับ)"
             placeholder="Icon HTTPS URL (ไม่บังคับ)"
             type="url"
-            className="min-h-11 rounded-xl border border-white/10 bg-[#07101d] px-3 text-sm outline-none"
+            className="min-h-11 rounded-xl border border-white/10 bg-background px-3 text-sm outline-none"
           />
-          <button className="rounded-xl bg-cyan-300 px-5 py-3 text-sm font-black text-[#06111f]">
+          <button className="rounded-xl bg-purple-300 px-5 py-3 text-sm font-semibold text-[#06111f]">
             เพิ่มเกม
           </button>
         </form>
 
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           {loading ? (
-            <p className="text-sm text-slate-400">กำลังโหลด...</p>
+            <p className="text-sm text-muted">กำลังโหลด...</p>
           ) : (
             games.map((game) => (
               <article
@@ -187,8 +190,8 @@ export function GameContentGames() {
                       </span>
                     )}
                     <span>
-                      <span className="block font-black">{game.name}</span>
-                      <span className="mt-1 block text-xs text-slate-500">
+                      <span className="block font-semibold">{game.name}</span>
+                      <span className="mt-1 block text-xs text-muted">
                         {game.slug}
                       </span>
                     </span>
@@ -198,10 +201,10 @@ export function GameContentGames() {
                   <button
                     type="button"
                     onClick={() => toggleGame(game)}
-                    className={`rounded-lg px-3 py-2 text-xs font-black ${
+                    className={`rounded-lg px-3 py-2 text-xs font-semibold ${
                       game.isActive
                         ? "bg-emerald-300 text-[#06111f]"
-                        : "bg-white/10 text-slate-400"
+                        : "bg-white/10 text-muted"
                     }`}
                   >
                     {game.isActive ? "เปิดอยู่" : "ปิดอยู่"}

@@ -1,3 +1,4 @@
+import { PageHeader, EmptyState } from "@/app/components/ui/workspace";
 import { hasDatabaseUrl } from "@/lib/db";
 import { listActiveSubscriptionPlans } from "@/lib/subscription/repository";
 
@@ -7,20 +8,9 @@ export default async function PricingPage() {
   const plans = hasDatabaseUrl() ? await listActiveSubscriptionPlans() : [];
 
   return (
-    <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
+    <main className="min-h-screen bg-background px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
-        <div className="mb-10 text-center">
-          <p className="mb-3 text-sm font-medium text-purple-300">
-            LAZY-AI.GAME Subscription
-          </p>
-          <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-            เลือกแพ็กเกจที่เหมาะกับร้านของคุณ
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-white/55">
-            โควตานับตามจำนวนรูปที่สร้างสำเร็จ ใช้งานได้ 30 วันต่อรอบบิล
-          </p>
-        </div>
-
+        <PageHeader title="แพ็กเกจสำหรับร้านของคุณ" description="เลือกตามจำนวนภาพที่ใช้ โควตานับเฉพาะภาพที่สร้างสำเร็จ ใช้งานได้ 30 วันต่อรอบ" />
         <div className="grid gap-5 md:grid-cols-3">
           {plans.map((plan) => {
             const featured = plan.slug === "pro";
@@ -36,10 +26,10 @@ export default async function PricingPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-black">{plan.name}</h2>
+                    <h2 className="text-2xl font-semibold">{plan.name}</h2>
                     <p
                       className={`mt-2 text-sm ${
-                        featured ? "text-black/65" : "text-white/50"
+                        featured ? "text-black/65" : "text-muted"
                       }`}
                     >
                       {plan.description}
@@ -53,12 +43,12 @@ export default async function PricingPage() {
                 </div>
 
                 <div className="mt-8">
-                  <span className="text-5xl font-black">
+                  <span className="text-5xl font-semibold">
                     ฿{plan.priceMonthlyThb}
                   </span>
                   <span
                     className={`ml-2 text-sm ${
-                      featured ? "text-black/60" : "text-white/45"
+                      featured ? "text-black/60" : "text-muted"
                     }`}
                   >
                     / เดือน
@@ -107,14 +97,12 @@ export default async function PricingPage() {
         </div>
 
         {plans.length === 0 && (
-          <div className="rounded-3xl border border-yellow-400/20 bg-yellow-400/10 p-6 text-center text-sm text-yellow-100">
-            ยังไม่พบแพ็กเกจที่เปิดใช้งาน กรุณาตั้งค่าฐานข้อมูลและรัน migration ก่อน
-          </div>
+          <EmptyState title="ยังไม่มีแพ็กเกจพร้อมให้เลือก" description="กรุณากลับมาตรวจสอบอีกครั้งภายหลัง" href="/dashboard" action="กลับไปภาพรวม" />
         )}
 
-        <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 text-sm text-white/55">
+        <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 text-sm text-muted">
           รองรับ PromptPay QR และโอนเงินแบบตรวจสอบหลักฐานโดยผู้ดูแล
-          รายการชำระเงินมีอายุ 24 ชั่วโมง และสลิปถูกเก็บแบบ private
+          รายการชำระเงินมีอายุ 24 ชั่วโมง และสลิปถูกเก็บเป็นส่วนตัว
         </div>
       </section>
     </main>

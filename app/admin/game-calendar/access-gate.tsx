@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+import { EmptyState, Skeleton } from "@/app/components/ui/workspace";
 
 export function GameCalendarAccessGate({
   children,
@@ -11,6 +12,7 @@ export function GameCalendarAccessGate({
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     window.queueMicrotask(async () => {
@@ -25,6 +27,8 @@ export function GameCalendarAccessGate({
           return;
         }
         setAllowed(true);
+      } catch {
+        setError(true);
       } finally {
         setChecked(true);
       }
@@ -33,15 +37,8 @@ export function GameCalendarAccessGate({
 
   if (!checked || !allowed) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#07101d] px-4 text-center text-white">
-        <div>
-          <p className="text-sm font-black text-cyan-200">
-            LAZY TOPUP · GAME CALENDAR
-          </p>
-          <p className="mt-2 text-sm text-slate-500">
-            กำลังตรวจสอบสิทธิ์การเข้าถึง...
-          </p>
-        </div>
+      <main className="grid min-h-screen place-items-center bg-background px-4 text-center text-white">
+        {error ? <EmptyState title="ตรวจสอบสิทธิ์ไม่สำเร็จ" description="กรุณาลองเชื่อมต่ออีกครั้ง" action="ลองอีกครั้ง" onAction={() => window.location.reload()} /> : <Skeleton label="กำลังตรวจสอบสิทธิ์การเข้าถึง" />}
       </main>
     );
   }

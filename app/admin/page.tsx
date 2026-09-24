@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { compressImage } from "@/app/lib/image-files";
-import { NotificationBell } from "@/app/components/notifications/notification-bell";
+
 import { GameActivityReviewPanel } from "./game-activity-review-panel";
 
 type UserRole = "user" | "admin";
@@ -386,14 +386,14 @@ export default function AdminDashboardPage() {
     ADMIN_SECTIONS[0];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#070710] text-white lg:h-screen">
+    <main className="relative min-h-screen overflow-hidden bg-background text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.12),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.07),transparent_30%)]"
       />
 
-      <div className="relative mx-auto grid min-h-screen max-w-[1680px] lg:h-screen lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="border-b border-white/[0.08] bg-[#0b0b17]/95 p-4 backdrop-blur-xl lg:flex lg:min-h-0 lg:flex-col lg:border-b-0 lg:border-r lg:p-5">
+      <div className="admin-workspace relative mx-auto max-w-[1680px]">
+        <aside className="admin-section-nav border-b border-white/10 p-4">
           <Link
             href="/"
             className="mb-5 flex items-center gap-3 rounded-2xl px-2 py-2 transition hover:bg-white/[0.04]"
@@ -408,21 +408,21 @@ export default function AdminDashboardPage() {
               />
             </span>
             <span>
-              <span className="block text-sm font-black tracking-[0.08em]">
+              <span className="block text-sm font-semibold tracking-[0.08em]">
                 LAZY-AI.GAME
               </span>
-              <span className="mt-0.5 block text-xs text-white/35">
+              <span className="mt-0.5 block text-xs text-muted">
                 Admin workspace
               </span>
             </span>
           </Link>
 
-          <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-white/25">
+          <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted">
             เมนูจัดการ
           </p>
           <nav
             aria-label="หมวดหมู่ Admin Dashboard"
-            className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-1"
+            className="grid grid-cols-2 gap-2 sm:grid-cols-4"
           >
             {ADMIN_SECTIONS.map((section) => {
               const active = activeSection === section.id;
@@ -435,14 +435,14 @@ export default function AdminDashboardPage() {
                   className={`group flex min-w-0 items-center gap-3 rounded-2xl border px-3 py-3 text-left transition ${
                     active
                       ? "border-purple-300/30 bg-purple-400/15 text-white shadow-[0_12px_30px_rgba(109,40,217,0.12)]"
-                      : "border-transparent text-white/55 hover:border-white/[0.07] hover:bg-white/[0.035] hover:text-white"
+                      : "border-transparent text-muted hover:border-white/[0.07] hover:bg-white/[0.035] hover:text-white"
                   }`}
                 >
                   <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base font-black ${
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base font-semibold ${
                       active
                         ? "bg-purple-300 text-[#12061d]"
-                        : "bg-white/[0.06] text-white/45 group-hover:text-white"
+                        : "bg-white/[0.06] text-muted group-hover:text-white"
                     }`}
                     aria-hidden="true"
                   >
@@ -452,7 +452,7 @@ export default function AdminDashboardPage() {
                     <span className="block truncate text-sm font-bold">
                       {section.label}
                     </span>
-                    <span className="mt-0.5 hidden truncate text-xs text-white/30 lg:block">
+                    <span className="mt-0.5 hidden truncate text-xs text-muted lg:block">
                       {section.description}
                     </span>
                   </span>
@@ -461,18 +461,18 @@ export default function AdminDashboardPage() {
             })}
           </nav>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/[0.07] pt-4 lg:mt-auto lg:grid-cols-1">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Link
               href="/admin/payments"
-              className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-3 py-2.5 text-center text-xs font-bold text-white/55 transition hover:border-purple-300/30 hover:text-white lg:text-left"
+              className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-3 py-2.5 text-center text-xs font-bold text-muted transition hover:border-purple-300/30 hover:text-white lg:text-left"
             >
-              ตรวจสอบ Payments
+              ตรวจการชำระเงิน
             </Link>
             <Link
               href="/admin/support"
-              className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-3 py-2.5 text-center text-xs font-bold text-white/55 transition hover:border-purple-300/30 hover:text-white lg:text-left"
+              className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-3 py-2.5 text-center text-xs font-bold text-muted transition hover:border-purple-300/30 hover:text-white lg:text-left"
             >
-              VIP Support Inbox
+              กล่องข้อความ VIP
             </Link>
           </div>
         </aside>
@@ -483,15 +483,15 @@ export default function AdminDashboardPage() {
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-purple-300/65">
                 Admin Dashboard
               </p>
-              <h1 className="mt-1 truncate text-xl font-black sm:text-2xl">
+              <h1 className="mt-1 truncate text-xl font-semibold sm:text-2xl">
                 {activeSectionMeta.label}
               </h1>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <NotificationBell />
+
               <Link
                 href="/"
-                className="hidden rounded-xl border border-white/10 px-4 py-2.5 text-xs font-bold text-white/55 transition hover:border-white/25 hover:text-white sm:block"
+                className="hidden rounded-xl border border-white/10 px-4 py-2.5 text-xs font-bold text-muted transition hover:border-white/25 hover:text-white sm:block"
               >
                 กลับหน้าเว็บไซต์
               </Link>
@@ -523,11 +523,11 @@ export default function AdminDashboardPage() {
                       <p className="text-sm font-semibold text-purple-300">
                         ภาพรวมระบบวันนี้
                       </p>
-                      <h2 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">
+                      <h2 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
                         จัดการทุกส่วนได้จากหน้าเดียว
                       </h2>
-                      <p className="mt-2 text-sm text-white/40">
-                        เลือกหมวดจากเมนูด้านซ้ายเพื่อทำงาน โดยไม่ต้องเลื่อนหาส่วนต่าง ๆ
+                      <p className="mt-2 text-sm text-muted">
+                        เลือกหมวดด้านบนเพื่อจัดการผู้ใช้ รูปรายวัน และกิจกรรม
                       </p>
                     </div>
                     <button
@@ -536,7 +536,7 @@ export default function AdminDashboardPage() {
                         loadUsers();
                         loadDailyImages();
                       }}
-                      className="rounded-xl bg-purple-300 px-4 py-3 text-sm font-black text-[#13091c] transition hover:bg-purple-200"
+                      className="rounded-xl bg-purple-300 px-4 py-3 text-sm font-semibold text-[#13091c] transition hover:bg-purple-200"
                     >
                       รีเฟรชข้อมูล
                     </button>
@@ -564,13 +564,13 @@ export default function AdminDashboardPage() {
                       key={label}
                       className="rounded-2xl border border-white/[0.08] bg-[#0d0d1a]/85 p-5"
                     >
-                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-white/35">
+                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted">
                         {label}
                       </p>
-                      <p className={`mt-3 text-3xl font-black ${color}`}>
+                      <p className={`mt-3 text-3xl font-semibold ${color}`}>
                         {value}
                       </p>
-                      <p className="mt-2 text-xs text-white/35">{description}</p>
+                      <p className="mt-2 text-xs text-muted">{description}</p>
                     </article>
                   ))}
                 </div>
@@ -579,8 +579,8 @@ export default function AdminDashboardPage() {
                   <section className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5">
                     <div className="mb-4 flex items-center justify-between">
                       <div>
-                        <h2 className="text-lg font-black">หมวดจัดการ</h2>
-                        <p className="mt-1 text-xs text-white/35">
+                        <h2 className="text-lg font-semibold">หมวดจัดการ</h2>
+                        <p className="mt-1 text-xs text-muted">
                           เลือกงานที่ต้องการดำเนินการ
                         </p>
                       </div>
@@ -595,13 +595,13 @@ export default function AdminDashboardPage() {
                           onClick={() => setActiveSection(section.id)}
                           className="rounded-2xl border border-white/[0.08] bg-black/20 p-4 text-left transition hover:-translate-y-0.5 hover:border-purple-300/30 hover:bg-purple-400/[0.06]"
                         >
-                          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-400/10 font-black text-purple-200">
+                          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-400/10 font-semibold text-purple-200">
                             {section.icon}
                           </span>
-                          <span className="mt-4 block font-black">
+                          <span className="mt-4 block font-semibold">
                             {section.label}
                           </span>
-                          <span className="mt-1 block text-xs text-white/35">
+                          <span className="mt-1 block text-xs text-muted">
                             {section.description}
                           </span>
                         </button>
@@ -610,7 +610,7 @@ export default function AdminDashboardPage() {
                   </section>
 
                   <section className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-5">
-                    <h2 className="text-lg font-black">ทางลัด</h2>
+                    <h2 className="text-lg font-semibold">ทางลัด</h2>
                     <div className="mt-4 space-y-2">
                       {[
                         ["ตรวจหลักฐานชำระเงิน", "/admin/payments"],
@@ -637,18 +637,18 @@ export default function AdminDashboardPage() {
               <div className="mx-auto grid max-w-7xl gap-4 lg:h-full lg:min-h-[580px] lg:grid-cols-[360px_minmax(0,1fr)]">
                 <section className="rounded-3xl border border-purple-300/20 bg-purple-400/[0.055] p-5 lg:overflow-y-auto">
                   <div className="mb-5">
-                    <p className="text-xs font-black uppercase tracking-[0.14em] text-purple-200">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-purple-200">
                       ♛ LAZYPRO
                     </p>
-                    <h2 className="mt-2 text-xl font-black">อัปโหลดรูปรายวัน</h2>
-                    <p className="mt-1 text-sm leading-6 text-white/40">
+                    <h2 className="mt-2 text-xl font-semibold">อัปโหลดรูปรายวัน</h2>
+                    <p className="mt-1 text-sm leading-6 text-muted">
                       เพิ่มภาพตัวอย่างสำหรับสมาชิกแพ็กเกจ 499/999
                     </p>
                   </div>
 
                   <form onSubmit={uploadDailyImage} className="space-y-3">
                     <label className="block">
-                      <span className="mb-1.5 block text-xs font-bold text-white/45">
+                      <span className="mb-1.5 block text-xs font-bold text-muted">
                         ชื่อรูป
                       </span>
                       <input
@@ -656,11 +656,11 @@ export default function AdminDashboardPage() {
                         onChange={(event) => setDailyGameName(event.target.value)}
                         placeholder="เช่น The Aeris Bundle"
                         maxLength={80}
-                        className="min-h-11 w-full rounded-xl border border-white/10 bg-black/35 px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-purple-300"
+                        className="min-h-11 w-full rounded-xl border border-white/10 bg-black/35 px-4 text-sm text-white outline-none transition placeholder:text-muted focus:border-purple-300"
                       />
                     </label>
                     <label className="block">
-                      <span className="mb-1.5 block text-xs font-bold text-white/45">
+                      <span className="mb-1.5 block text-xs font-bold text-muted">
                         แท็กเกม
                       </span>
                       <input
@@ -668,11 +668,11 @@ export default function AdminDashboardPage() {
                         onChange={(event) => setDailyGameTag(event.target.value)}
                         placeholder="เช่น ROV, MLBB, Free Fire"
                         maxLength={80}
-                        className="min-h-11 w-full rounded-xl border border-white/10 bg-black/35 px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-purple-300"
+                        className="min-h-11 w-full rounded-xl border border-white/10 bg-black/35 px-4 text-sm text-white outline-none transition placeholder:text-muted focus:border-purple-300"
                       />
                     </label>
                     <label className="block">
-                      <span className="mb-1.5 block text-xs font-bold text-white/45">
+                      <span className="mb-1.5 block text-xs font-bold text-muted">
                         ประเภทภาพ
                       </span>
                       <select
@@ -686,11 +686,11 @@ export default function AdminDashboardPage() {
                         <option value="image2">ภาพที่ 2 — ราคาแพ็ค</option>
                       </select>
                     </label>
-                    <label className="flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-white/15 bg-black/25 px-4 text-sm text-white/55 transition hover:border-purple-300/50 hover:text-white">
+                    <label className="flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-white/15 bg-black/25 px-4 text-sm text-muted transition hover:border-purple-300/50 hover:text-white">
                       <span className="truncate">
                         {dailyFileName || "เลือกไฟล์ PNG, JPG หรือ WEBP"}
                       </span>
-                      <span className="shrink-0 font-black text-purple-200">＋</span>
+                      <span className="shrink-0 font-semibold text-purple-200">＋</span>
                       <input
                         type="file"
                         accept="image/png,image/jpeg,image/webp"
@@ -715,7 +715,7 @@ export default function AdminDashboardPage() {
                         </span>
                         <div className="min-w-0">
                           <p className="truncate text-sm font-bold">พร้อมอัปโหลด</p>
-                          <p className="mt-1 text-xs text-white/35">
+                          <p className="mt-1 text-xs text-muted">
                             {DAILY_IMAGE_SLOT_LABELS[dailyImageSlot]}
                           </p>
                         </div>
@@ -725,7 +725,7 @@ export default function AdminDashboardPage() {
                     <button
                       type="submit"
                       disabled={dailyUploading}
-                      className="w-full rounded-xl bg-purple-300 px-5 py-3 text-sm font-black text-[#13091c] transition hover:bg-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="w-full rounded-xl bg-purple-300 px-5 py-3 text-sm font-semibold text-[#13091c] transition hover:bg-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {dailyUploading ? "กำลังอัปโหลด..." : "อัปโหลดรูป"}
                     </button>
@@ -735,15 +735,15 @@ export default function AdminDashboardPage() {
                 <section className="flex min-h-0 flex-col overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.03]">
                   <div className="flex items-center justify-between gap-4 border-b border-white/[0.07] px-5 py-4">
                     <div>
-                      <h2 className="font-black">คลังรูปรายวัน</h2>
-                      <p className="mt-1 text-xs text-white/35">
+                      <h2 className="font-semibold">คลังรูปรายวัน</h2>
+                      <p className="mt-1 text-xs text-muted">
                         {dailyImages.length} รูป · เรียงล่าสุดก่อน
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={loadDailyImages}
-                      className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-white/55 transition hover:border-white/25 hover:text-white"
+                      className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-muted transition hover:border-white/25 hover:text-white"
                     >
                       รีเฟรช
                     </button>
@@ -751,11 +751,11 @@ export default function AdminDashboardPage() {
 
                   <div className="min-h-0 flex-1 overflow-y-auto p-4">
                     {dailyLoading ? (
-                      <div className="rounded-2xl border border-white/10 p-6 text-sm text-white/40">
+                      <div className="rounded-2xl border border-white/10 p-6 text-sm text-muted">
                         กำลังโหลดรูปรายวัน...
                       </div>
                     ) : dailyImages.length === 0 ? (
-                      <div className="rounded-2xl border border-dashed border-white/10 p-10 text-center text-sm text-white/40">
+                      <div className="rounded-2xl border border-dashed border-white/10 p-10 text-center text-sm text-muted">
                         ยังไม่มีรูปรายวัน
                       </div>
                     ) : (
@@ -781,7 +781,7 @@ export default function AdminDashboardPage() {
                                   <p className="truncate text-sm font-bold">
                                     {image.gameName}
                                   </p>
-                                  <p className="mt-1 truncate text-xs text-white/35">
+                                  <p className="mt-1 truncate text-xs text-muted">
                                     {image.gameTag || "ไม่มีแท็กเกม"}
                                   </p>
                                 </div>
@@ -825,18 +825,18 @@ export default function AdminDashboardPage() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="ค้นหาอีเมลหรือชื่อผู้ใช้งาน"
-                    className="min-h-11 flex-1 rounded-xl border border-white/10 bg-black/35 px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-purple-300"
+                    className="min-h-11 flex-1 rounded-xl border border-white/10 bg-black/35 px-4 text-sm text-white outline-none transition placeholder:text-muted focus:border-purple-300"
                   />
                   <button
                     type="submit"
-                    className="rounded-xl bg-purple-300 px-5 py-3 text-sm font-black text-[#13091c] transition hover:bg-purple-200"
+                    className="rounded-xl bg-purple-300 px-5 py-3 text-sm font-semibold text-[#13091c] transition hover:bg-purple-200"
                   >
                     ค้นหา
                   </button>
                   <button
                     type="button"
                     onClick={() => loadUsers(search)}
-                    className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-white/55 transition hover:border-white/25 hover:text-white"
+                    className="rounded-xl border border-white/10 px-4 py-3 text-sm font-bold text-muted transition hover:border-white/25 hover:text-white"
                   >
                     รีเฟรช
                   </button>
@@ -844,7 +844,7 @@ export default function AdminDashboardPage() {
 
                 <section className="min-h-0 flex-1 overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.03]">
                   <div className="h-full overflow-auto">
-                    <div className="sticky top-0 z-10 grid min-w-[1060px] grid-cols-[1.5fr_0.7fr_1.4fr_1fr_1fr] border-b border-white/10 bg-[#10101d] px-4 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white/35">
+                    <div className="sticky top-0 z-10 grid min-w-[1060px] grid-cols-[1.5fr_0.7fr_1.4fr_1fr_1fr] border-b border-white/10 bg-[#10101d] px-4 py-3 text-xs font-bold uppercase tracking-[0.08em] text-muted">
                       <div>ผู้ใช้งาน</div>
                       <div>สิทธิ์</div>
                       <div>แพ็กเกจ</div>
@@ -853,11 +853,11 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {loading ? (
-                      <div className="p-6 text-sm text-white/40">
+                      <div className="p-6 text-sm text-muted">
                         กำลังโหลดผู้ใช้งาน...
                       </div>
                     ) : users.length === 0 ? (
-                      <div className="p-10 text-center text-sm text-white/40">
+                      <div className="p-10 text-center text-sm text-muted">
                         ไม่พบผู้ใช้งาน
                       </div>
                     ) : (
@@ -871,17 +871,17 @@ export default function AdminDashboardPage() {
                               <p className="break-all text-sm font-bold">
                                 {user.email}
                               </p>
-                              <p className="mt-1 text-xs text-white/40">
+                              <p className="mt-1 text-xs text-muted">
                                 {user.displayName || "ยังไม่มีชื่อแสดง"}
                               </p>
-                              <p className="mt-2 text-xs text-white/25">
+                              <p className="mt-2 text-xs text-muted">
                                 สมัครเมื่อ {formatDate(user.createdAt)}
                               </p>
                             </div>
 
                             <div>
                               <span
-                                className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${roleClassName(
+                                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${roleClassName(
                                   user.role
                                 )}`}
                               >
@@ -904,7 +904,7 @@ export default function AdminDashboardPage() {
                                     actingUserId === user.id || user.role === "user"
                                   }
                                   onClick={() => updateRole(user.id, "user")}
-                                  className="rounded-lg border border-white/10 px-3 py-2 text-xs font-bold text-white/55 transition hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-30"
+                                  className="rounded-lg border border-white/10 px-3 py-2 text-xs font-bold text-muted transition hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-30"
                                 >
                                   ตั้งเป็น User
                                 </button>
@@ -915,17 +915,17 @@ export default function AdminDashboardPage() {
                               {user.subscription ? (
                                 <>
                                   <div className="flex flex-wrap items-center gap-2">
-                                    <p className="text-sm font-black">
+                                    <p className="text-sm font-semibold">
                                       {user.subscription.planName}
                                     </p>
-                                    <span className="rounded-full bg-white/[0.07] px-2 py-1 text-xs text-white/50">
+                                    <span className="rounded-full bg-white/[0.07] px-2 py-1 text-xs text-muted">
                                       {user.subscription.status}
                                     </span>
                                   </div>
-                                  <p className="mt-2 text-xs text-white/40">
+                                  <p className="mt-2 text-xs text-muted">
                                     ฿{user.subscription.priceMonthlyThb} / เดือน
                                   </p>
-                                  <p className="mt-1 text-xs text-white/40">
+                                  <p className="mt-1 text-xs text-muted">
                                     {formatDate(
                                       user.subscription.currentPeriodStart
                                     )}{" "}
@@ -933,7 +933,7 @@ export default function AdminDashboardPage() {
                                   </p>
                                 </>
                               ) : (
-                                <p className="text-sm text-white/35">ไม่มีแพ็กเกจ</p>
+                                <p className="text-sm text-muted">ไม่มีแพ็กเกจ</p>
                               )}
                             </div>
 
@@ -944,7 +944,7 @@ export default function AdminDashboardPage() {
                                     {user.subscription.usedImagesThisPeriod} /{" "}
                                     {user.subscription.monthlyImageLimit}
                                   </p>
-                                  <p className="mt-1 text-xs text-white/40">
+                                  <p className="mt-1 text-xs text-muted">
                                     เหลือ {user.subscription.remainingImages} รูป
                                   </p>
                                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.07]">
@@ -966,7 +966,7 @@ export default function AdminDashboardPage() {
                                   </div>
                                 </>
                               ) : (
-                                <p className="text-sm text-white/35">-</p>
+                                <p className="text-sm text-muted">-</p>
                               )}
                             </div>
 
@@ -976,7 +976,7 @@ export default function AdminDashboardPage() {
                                   "th-TH"
                                 )}
                               </p>
-                              <p className="mt-1 text-xs text-white/40">
+                              <p className="mt-1 text-xs text-muted">
                                 สำเร็จ {user.paymentSummary.paidPayments} / ทั้งหมด{" "}
                                 {user.paymentSummary.totalPayments}
                               </p>

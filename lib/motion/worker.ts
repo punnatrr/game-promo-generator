@@ -90,7 +90,8 @@ export async function runMotion() {
       await tx`update motion_attempts set adopted=true,finished_at=now(),outcome='completed' where lease_token=${job.lease}`;
       await tx`update motion_jobs set state='succeeded',error_code=null,lease_token=null,lease_until=null,updated_at=now() where id=${job.id}`;
     });
-  } catch {
+  } catch (error) {
+    console.error('motion_worker_job_failed', job.id, error instanceof Error ? error.message : 'unknown');
     if(job.state==='analyzing') {
       // Even provider/storage failure leaves a reviewable manual plan; render still validates the source.
       await db`update motion_jobs set state='review',analysis_source='manual',revision=revision+1,lease_token=null,lease_until=null,error_code='analysis_unavailable',updated_at=now() where id=${job.id} and lease_token=${job.lease} and lease_until>now()`;

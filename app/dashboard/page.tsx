@@ -1,10 +1,11 @@
 "use client";
+import Link from "next/link";
 
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/app/components/ui/button";
 import { StatusMessage } from "@/app/components/ui/status-message";
 import { TextField } from "@/app/components/ui/text-field";
-import { NotificationBell } from "@/app/components/notifications/notification-bell";
+import { PageHeader, Skeleton } from "@/app/components/ui/workspace";
 
 type DashboardState = {
   user: {
@@ -49,6 +50,7 @@ async function fetchDashboardState() {
 export default function DashboardPage() {
   const [state, setState] = useState<DashboardState | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [trialCode, setTrialCode] = useState("");
   const [redeemingTrial, setRedeemingTrial] = useState(false);
   const [trialFeedback, setTrialFeedback] = useState<{
@@ -65,6 +67,7 @@ export default function DashboardPage() {
         if (active) setState(data);
       } catch (error) {
         console.error(error);
+        if (active) setLoadError(true);
       } finally {
         if (active) setLoading(false);
       }
@@ -124,48 +127,16 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
+    <main className="min-h-screen bg-background px-6 py-10 text-white">
       <section className="mx-auto max-w-5xl">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="mb-3 text-sm font-medium text-purple-300">
-              LAZY-AI.GAME Member
-            </p>
-            <h1 className="text-4xl font-black tracking-tight">Dashboard</h1>
-          </div>
-
-          {state?.user && <NotificationBell />}
-
-          <a
-            href="/pricing"
-            className="rounded-2xl bg-purple-400 px-5 py-3 text-center font-bold text-black transition hover:bg-purple-300"
-          >
-            ดูแพ็กเกจ
-          </a>
-          <a
-            href="/dashboard/history"
-            className="rounded-2xl border border-white/10 px-5 py-3 text-center font-bold text-white/70 transition hover:border-white/30 hover:text-white"
-          >
-            ประวัติภาพ
-          </a>
-          {state?.isAdmin && (
-            <a
-              href="/admin"
-              className="rounded-2xl border border-white/10 px-5 py-3 text-center font-bold text-white/70 transition hover:border-white/30 hover:text-white"
-            >
-              ตรวจ payment
-            </a>
-          )}
-        </div>
-
+        <PageHeader title="บัญชีและการใช้งาน" description="ตรวจแพ็กเกจ สิทธิ์ที่เหลือ และจัดการบัญชีของคุณ" action={<Link href="/" className="action-link">กลับไปสร้างงาน</Link>} />
+        <section id="account" className="dashboard-section"><h2 className="mb-5">บัญชีและการใช้งาน</h2></section>
         {loading ? (
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 text-white/50">
-            กำลังโหลดข้อมูล...
-          </div>
-        ) : !state?.databaseConfigured ? (
+          <Skeleton />
+        ) : loadError ? (<Notice title="โหลดข้อมูลบัญชีไม่สำเร็จ" body="ลองโหลดอีกครั้งเพื่อตรวจแพ็กเกจและโควตาของคุณ" actionHref="/dashboard" actionLabel="ลองอีกครั้ง" />) : !state?.databaseConfigured ? (
           <Notice
-            title="ยังไม่ได้เชื่อมต่อฐานข้อมูล"
-            body="ตั้งค่า DATABASE_URL และรัน db/schema.sql + db/seed-plans.sql ก่อนใช้งานระบบสมาชิกจริง"
+            title="ข้อมูลสมาชิกยังไม่พร้อมใช้งาน"
+            body="กรุณาลองอีกครั้งภายหลัง หากยังพบปัญหาให้ติดต่อทีมงาน"
           />
         ) : !state.user ? (
           <Notice
@@ -176,30 +147,6 @@ export default function DashboardPage() {
           />
         ) : (
           <>
-          <a href="/dashboard/frame" className="mb-5 block rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:border-purple-300/50">
-            <p className="text-xs font-bold tracking-widest text-purple-300">VIDEO FRAME</p>
-            <h2 className="mt-2 text-2xl font-black">ภาพโปรโมชั่น + คลิปของร้าน</h2>
-            <p className="mt-2 text-sm text-white/55">จัดกรอบแนวตั้งพร้อมโลโก้และช่องทางสั่งซื้อจากข้อมูลร้าน</p>
-            <span className="mt-4 inline-block text-sm font-bold text-purple-200">เปิดหน้าจัดกรอบวิดีโอ →</span>
-          </a>
-          <a href="/dashboard/motion" className="mb-5 block rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:border-purple-300/50">
-            <p className="text-xs font-bold tracking-widest text-purple-300">MOTION STUDIO</p>
-            <h2 className="mt-2 text-2xl font-black">สร้างวิดีโอจากภาพโปรโมชั่น</h2>
-            <p className="mt-2 text-sm text-white/55">ตรวจแผนเคลื่อนไหวและไฮไลต์ราคา แล้วสร้าง MP4</p>
-            <span className="mt-4 inline-block text-sm font-bold text-purple-200">เปิดสตูดิโอวิดีโอ →</span>
-          </a>
-          <a href="/dashboard/library" className="mb-5 block rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:border-purple-300/50">
-            <p className="text-sm font-bold text-purple-200">LIBRARY</p>
-            <h2 className="mt-2 text-2xl font-black">คลังไฟล์และชุดงาน</h2>
-            <p className="mt-2 text-sm leading-6 text-white/55">เก็บภาพและคลิป จัดชุดงาน และติดตามสถานะการตรวจไฟล์</p>
-            <span className="mt-4 inline-block text-sm font-bold text-purple-200">เปิดคลังงาน →</span>
-          </a>
-          <a href="/dashboard/brand" className="mb-5 block rounded-3xl border border-purple-300/25 bg-purple-300/[0.07] p-6 transition hover:border-purple-300/50">
-            <p className="text-sm font-bold text-purple-200">BRAND KIT</p>
-            <h2 className="mt-2 text-2xl font-black">ข้อมูลร้านของคุณ</h2>
-            <p className="mt-2 text-sm leading-6 text-white/55">ตั้งชื่อ โลโก้ สี และช่องทางติดต่อ เพื่อเตรียมแบรนด์สำหรับชิ้นงานใหม่</p>
-            <span className="mt-4 inline-block text-sm font-bold text-purple-200">ตั้งค่าข้อมูลร้าน →</span>
-          </a>
           {!state.subscription && (
             <section className="mb-5 rounded-3xl border border-emerald-300/25 bg-emerald-300/[0.07] p-6">
               <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-end">
@@ -207,10 +154,10 @@ export default function DashboardPage() {
                   <p className="text-sm font-bold text-emerald-200">
                     FREE TRIAL
                   </p>
-                  <h2 className="mt-2 text-2xl font-black">
+                  <h2 className="mt-2 text-2xl font-semibold">
                     มีโค้ดทดลองใช้ รับฟรี 10 รูป
                   </h2>
-                  <p className="mt-2 text-sm leading-6 text-white/55">
+                  <p className="mt-2 text-sm leading-6 text-muted">
                     หนึ่งบัญชีรับสิทธิ์ทดลองได้เพียงครั้งเดียว ใช้ได้ทั้งการสร้างภาพใหม่และแก้ไขภาพ
                   </p>
                 </div>
@@ -253,18 +200,18 @@ export default function DashboardPage() {
               <h2 className="text-xl font-bold">บัญชีของฉัน</h2>
               <dl className="mt-5 space-y-4 text-sm">
                 <div>
-                  <dt className="text-white/40">อีเมล</dt>
+                  <dt className="text-muted">อีเมล</dt>
                   <dd className="mt-1 font-medium">{state.user.email}</dd>
                 </div>
                 <div>
-                  <dt className="text-white/40">ชื่อ</dt>
+                  <dt className="text-muted">ชื่อ</dt>
                   <dd className="mt-1 font-medium">
                     {state.user.displayName || "-"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-white/40">Role</dt>
-                  <dd className="mt-1 font-medium">{state.user.role}</dd>
+                  <dt className="text-muted">สิทธิ์บัญชี</dt>
+                  <dd className="mt-1 font-medium">{state.user.role === "admin" ? "ผู้ดูแลระบบ" : "สมาชิก"}</dd>
                 </div>
               </dl>
             </section>
@@ -276,15 +223,15 @@ export default function DashboardPage() {
                 <div className="mt-5">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                      <p className="text-3xl font-black">
+                      <p className="text-3xl font-semibold">
                         {state.subscription.plan.name}
                       </p>
-                      <p className="mt-1 text-sm text-white/45">
+                      <p className="mt-1 text-sm text-muted">
                         {state.subscription.plan.description}
                       </p>
                     </div>
                     <span className="rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold text-black">
-                      {state.subscription.status}
+                      {state.subscription.status === "active" ? "ใช้งานได้" : state.subscription.status === "expired" ? "หมดอายุ" : "ยังไม่พร้อมใช้งาน"}
                     </span>
                   </div>
 
@@ -303,7 +250,7 @@ export default function DashboardPage() {
                     />
                   </div>
 
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/55">
+                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-muted">
                     {state.subscription.plan.slug === "trial" ? (
                       <>สิทธิ์ทดลองใช้ 10 รูป ไม่รีเซ็ตรายเดือน</>
                     ) : (
@@ -319,7 +266,7 @@ export default function DashboardPage() {
               ) : (
                 <Notice
                   title="ยังไม่มีแพ็กเกจที่ใช้งานได้"
-                  body="เลือกแพ็กเกจและชำระเงินเพื่อเปิดสิทธิ์ใช้งาน Generate"
+                  body="เลือกแพ็กเกจและชำระเงินเพื่อเปิดสิทธิ์สร้างภาพ"
                   actionHref="/pricing"
                   actionLabel="เลือกแพ็กเกจ"
                 />
@@ -335,12 +282,12 @@ export default function DashboardPage() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-bold text-purple-200">Business 999 Exclusive</p>
-                  <h2 className="mt-2 text-2xl font-black">Human VIP Support</h2>
-                  <p className="mt-2 text-sm leading-6 text-white/50">
+                  <h2 className="mt-2 text-2xl font-semibold">Human VIP Support</h2>
+                  <p className="mt-2 text-sm leading-6 text-muted">
                     คุยกับทีมงานมนุษย์ หรือส่งรูปที่เจนไม่ถูกใจมาให้ช่วยตรวจและแก้ไข
                   </p>
                 </div>
-                <span className="shrink-0 rounded-xl bg-purple-300 px-5 py-3 text-center text-sm font-black text-black">
+                <span className="shrink-0 rounded-xl bg-purple-300 px-5 py-3 text-center text-sm font-semibold text-black">
                   เปิดกล่องข้อความ
                 </span>
               </div>
@@ -367,7 +314,7 @@ function Notice({
   return (
     <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
       <h2 className="text-xl font-bold">{title}</h2>
-      <p className="mt-2 text-sm text-white/50">{body}</p>
+      <p className="mt-2 text-sm text-muted">{body}</p>
       {actionHref && actionLabel && (
         <a
           href={actionHref}
@@ -383,8 +330,8 @@ function Notice({
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-      <p className="text-sm text-white/45">{label}</p>
-      <p className="mt-2 text-3xl font-black">{value}</p>
+      <p className="text-sm text-muted">{label}</p>
+      <p className="mt-2 text-3xl font-semibold">{value}</p>
     </div>
   );
 }

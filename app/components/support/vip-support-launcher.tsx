@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SupportChatWorkspace } from "./support-chat-workspace";
 
 const EMPTY_IMAGE_URLS: string[] = [];
@@ -20,6 +20,8 @@ export function VipSupportLauncher({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const [unreadCount, setUnreadCount] = useState(0);
+  const dialogRef = useRef<HTMLElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const loadUnreadCount = useCallback(async () => {
     if (!hasAccess) return;
@@ -56,9 +58,16 @@ export function VipSupportLauncher({
   useEffect(() => {
     if (!open) return;
 
+    const trigger = triggerRef.current;
     const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
+      if (event.key === "Tab") {
+        const nodes = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') || []).filter(el => el.getClientRects().length > 0);
+        const first = nodes[0], last = nodes[nodes.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
     };
 
     document.body.style.overflow = "hidden";
@@ -67,6 +76,7 @@ export function VipSupportLauncher({
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+      trigger?.focus();
     };
   }, [open]);
 
@@ -80,27 +90,28 @@ export function VipSupportLauncher({
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
         aria-label="เปิดกล่องแชต VIP Support"
         aria-expanded={open}
-        className="group fixed bottom-5 right-5 z-50 inline-flex min-h-16 items-center gap-3 rounded-2xl border-2 border-purple-200/70 bg-[#21102f]/95 px-2.5 text-sm font-black text-white shadow-[0_0_0_4px_rgba(168,85,247,0.12),0_18px_55px_rgba(168,85,247,0.55)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-white hover:bg-purple-400 hover:text-black focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-purple-200/50 sm:bottom-7 sm:right-7 sm:px-4"
+        className="vip-launcher group fixed bottom-5 right-5 z-50 inline-flex min-h-12 items-center gap-3 rounded-xl border border-white/20 bg-surface px-4 py-2 text-sm text-white transition hover:border-purple-300 focus-visible:ring-2 focus-visible:ring-purple-200"
       >
         <span
           aria-hidden="true"
-          className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-300 to-purple-400 text-white shadow-[0_0_24px_rgba(216,180,254,0.65)] ring-2 ring-white/70 transition group-hover:from-white group-hover:to-purple-100 group-hover:text-purple-700"
+          className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center text-purple-200"
         >
           <ChatBubbleIcon className="h-7 w-7" />
           <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-[#21102f] bg-emerald-400 group-hover:border-purple-400" />
         </span>
-        <span className="hidden sm:block">
+        <span className="block">
           <span className="block">VIP Support</span>
           <span className="block text-[10px] font-semibold opacity-60">
             {hasAccess ? "ทีมงานมนุษย์ช่วยแก้ภาพ" : "เฉพาะแพ็ก Business 999"}
           </span>
         </span>
         {hasAccess && unreadCount > 0 ? (
-          <span className="absolute -right-1.5 -top-1.5 min-w-6 rounded-full bg-fuchsia-400 px-1.5 py-1 text-center text-[10px] font-black text-black">
+          <span className="absolute -right-1.5 -top-1.5 min-w-6 rounded-full bg-fuchsia-400 px-1.5 py-1 text-center text-[10px] font-semibold text-black">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
@@ -115,6 +126,7 @@ export function VipSupportLauncher({
           }}
         >
           <section
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="vip-support-dialog-title"
@@ -122,10 +134,10 @@ export function VipSupportLauncher({
           >
             <header className="flex items-center justify-between gap-4 border-b border-white/10 bg-purple-300/[0.06] px-4 py-3 sm:px-5">
               <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-purple-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-300">
                   Business 999 Exclusive
                 </p>
-                <h2 id="vip-support-dialog-title" className="mt-1 truncate text-lg font-black">
+                <h2 id="vip-support-dialog-title" className="mt-1 truncate text-lg font-semibold">
                   Human VIP Support
                 </h2>
               </div>
@@ -167,15 +179,15 @@ export function VipSupportLauncher({
                     >
                       {authenticated ? "🔒" : "💬"}
                     </span>
-                    <p className="mt-5 text-xs font-black uppercase tracking-[0.16em] text-purple-300">
+                    <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-purple-300">
                       Business 999 Exclusive
                     </p>
-                    <h3 className="mt-2 text-2xl font-black text-white">
+                    <h3 className="mt-2 text-2xl font-semibold text-white">
                       {authenticated
                         ? "VIP Support สำหรับแพ็ก Business 999"
                         : "เข้าสู่ระบบเพื่อใช้ VIP Support"}
                     </h3>
-                    <p className="mt-3 text-sm leading-6 text-white/55">
+                    <p className="mt-3 text-sm leading-6 text-muted">
                       {authenticated
                         ? "บัญชีนี้ยังไม่มีสิทธิ์ใช้งานแชตกับแอดมิน อัปเกรดเป็นแพ็ก Business 999 เพื่อส่งข้อความ แนบรูป และรับการแจ้งเตือนตอบกลับ"
                         : "เข้าสู่ระบบเพื่อตรวจสอบสิทธิ์แพ็กเกจ และใช้งานแชตกับทีมงานมนุษย์สำหรับสมาชิก Business 999"}
@@ -183,7 +195,7 @@ export function VipSupportLauncher({
                     <div className="mt-6 flex flex-wrap justify-center gap-3">
                       <a
                         href={authenticated ? "/pricing" : "/sign-in"}
-                        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-purple-300 px-5 text-sm font-black text-black transition hover:bg-purple-200"
+                        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-purple-300 px-5 text-sm font-semibold text-black transition hover:bg-purple-200"
                       >
                         {authenticated ? "ดูแพ็ก Business 999" : "เข้าสู่ระบบ"}
                       </a>

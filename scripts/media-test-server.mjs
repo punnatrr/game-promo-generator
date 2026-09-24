@@ -30,9 +30,10 @@ try {
   await db.unsafe(await readFile('db/migrations/20260914_media_library.sql', 'utf8'));
   await db.unsafe(await readFile('db/migrations/20260914_motion_studio.sql', 'utf8'));
   await db.unsafe(await readFile('db/migrations/20260915_video_frame.sql', 'utf8'));
+  await db.unsafe(await readFile('db/migrations/20260920_ads_planner.sql', 'utf8'));
   next = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'dev', '--hostname', '127.0.0.1', '--port', '3107'], {
     windowsHide: true, stdio: 'inherit',
-    env: { ...process.env, DATABASE_URL: databaseUrl, MEDIA_TEST_STORAGE: '1', BLOB_READ_WRITE_TOKEN: '', OPENAI_API_KEY: '', GEMINI_API_KEY: '', GOOGLE_API_KEY: '', MOTION_VISION_MODEL: '', AUTH_SESSION_COOKIE_NAME: 'brand_test_session', NODE_ENV: 'development' },
+    env: { ...process.env, DATABASE_URL: databaseUrl, MEDIA_TEST_STORAGE: '1', CRON_SECRET: 'isolated-fixture-secret', BLOB_READ_WRITE_TOKEN: '', OPENAI_API_KEY: '', GEMINI_API_KEY: '', GOOGLE_API_KEY: '', MOTION_VISION_MODEL: '', ADS_ANALYSIS_MODEL:'', AUTH_SESSION_COOKIE_NAME: 'brand_test_session', NODE_ENV: 'development' },
   });
   next.on('exit', stop);
   console.log('M2 isolated PostgreSQL and local storage ready: http://localhost:3107/dashboard/library');

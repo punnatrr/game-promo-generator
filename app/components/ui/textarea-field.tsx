@@ -38,12 +38,12 @@ export function TextareaField({
         aria-invalid={error ? true : undefined}
         aria-describedby={[hintId, errorId].filter(Boolean).join(" ") || undefined}
         className={cn(
-          "w-full resize-y rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition placeholder:text-white/25 focus:border-white/50 focus-visible:ring-2 focus-visible:ring-purple-400/60 disabled:cursor-not-allowed disabled:opacity-55",
+          "ui-field w-full resize-y rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition placeholder:text-muted focus:border-white/50 focus-visible:ring-2 focus-visible:ring-purple-400/60 disabled:cursor-not-allowed disabled:opacity-55",
           error && "border-red-400/70",
           className
         )}
       />
-      {hint && <p id={hintId} className="mt-1.5 text-xs text-white/45">{hint}</p>}
+      {hint && <p id={hintId} className="mt-1.5 text-xs text-muted">{hint}</p>}
       {error && <p id={errorId} className="mt-1.5 text-sm text-red-300">{error}</p>}
     </div>
   );

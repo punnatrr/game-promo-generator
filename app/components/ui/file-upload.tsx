@@ -74,6 +74,7 @@ export function FileUpload({
     if (rejection) {
       event.target.value = "";
       setValidationError(rejection);
+      onFileChange(undefined);
       onRejected?.(rejection);
       return;
     }
@@ -83,6 +84,7 @@ export function FileUpload({
 
   return (
     <div className={className}>
+      <div className="relative">
       <label
         htmlFor={inputId}
         className={cn(
@@ -104,11 +106,10 @@ export function FileUpload({
             {required && <span className="ml-1 text-pink-300" aria-hidden="true">*</span>}
           </span>
           {description && (
-            <span id={descriptionId} className="mt-1 block text-sm text-white/50">{description}</span>
+            <span id={descriptionId} className="mt-1 block text-sm text-muted">{description}</span>
           )}
-          <span className="mt-2 block text-xs text-white/35">PNG, JPG หรือ WEBP</span>
+          <span className="mt-2 block text-xs text-muted">{previewUrl ? "เลือกแล้ว · กดเพื่อเปลี่ยนภาพ" : "กดเพื่อเลือกภาพ"} · PNG, JPG หรือ WebP{maxSizeBytes ? ` ไม่เกิน ${Math.round(maxSizeBytes / 1024 / 1024)} MB` : ""}</span>
         </span>
-        {action && <span className="shrink-0">{action}</span>}
         <input
           id={inputId}
           name={name}
@@ -122,6 +123,8 @@ export function FileUpload({
           className="sr-only"
         />
       </label>
+      {action && <div className="mt-2 flex justify-end">{action}</div>}
+      </div>
       {displayedError && <p id={errorId} className="mt-1.5 text-sm text-red-300">{displayedError}</p>}
     </div>
   );

@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { CreatorShell, CreatorWorkspace, CreatorSettingsPanel, CreatorCanvas, CreatorPrimaryAction } from "./components/creator/creator-shell";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "./components/ui/button";
 import { FileUpload } from "./components/ui/file-upload";
-import { RadioGroup } from "./components/ui/radio-group";
 import { SelectField } from "./components/ui/select-field";
 import { Spinner } from "./components/ui/spinner";
 import { StatusMessage } from "./components/ui/status-message";
@@ -418,28 +417,25 @@ export default function Page() {
   }
 
   function deleteHistoryItem(id: string) {
+    if (!window.confirm("ลบภาพนี้ออกจากประวัติในเบราว์เซอร์?")) return;
     persistHistory(history.filter((item) => item.id !== id));
   }
 
   function clearHistory() {
+    if (!window.confirm("ล้างประวัติภาพที่เก็บในเบราว์เซอร์นี้? ประวัติในบัญชียังคงอยู่")) return;
     clearStoredHistory();
     setHistory([]);
   }
 
-  async function handleSignOut() {
-    try {
-      await fetch("/api/auth/sign-out", {
-        method: "POST",
-      });
-    } finally {
-      setMemberState((prev) =>
-        prev ? { ...prev, user: null, subscription: null } : prev
-      );
-    }
-  }
 
   function handlePreview(slot: ImageSlot, file?: File) {
-    if (!file) return;
+    if (!file) {
+      const previous = previewUrlsRef.current[slot];
+      if (previous) URL.revokeObjectURL(previous);
+      previewUrlsRef.current[slot] = null;
+      setPreviews(current => ({ ...current, [slot]: null }));
+      return;
+    }
 
     const url = URL.createObjectURL(file);
     const previousUrl = previewUrlsRef.current[slot];
@@ -746,14 +742,6 @@ export default function Page() {
   const canUseVipSupport = Boolean(
     memberState?.subscription?.plan.hasVipSupport || memberState?.isAdmin
   );
-  const previewAspectClass: Record<ImageSizeValue, string> = {
-    "1:1": "aspect-square",
-    "3:4": "aspect-[3/4]",
-    "4:5": "aspect-[4/5]",
-    "9:16": "aspect-[9/16]",
-    "4:3": "aspect-[4/3]",
-    "16:9": "aspect-video",
-  };
   const dailyImagesForSlot = dailyPickerSlot
     ? dailyImages
         .filter((image) => image.imageSlot === dailyPickerSlot)
@@ -771,9 +759,12 @@ export default function Page() {
       )
     : dailyImagesForSlot;
   const activeWebsiteGuideStep = WEBSITE_GUIDE_STEPS[websiteGuideStep];
+  const selectedSize = IMAGE_SIZE_OPTIONS.find((option) => option.value === aspectRatio)!;
+  const [previewWidth, previewHeight] = aspectRatio.split(":").map(Number);
 
   return (
-    <main className="generator-studio relative isolate min-h-screen overflow-hidden bg-[#060609] text-white selection:bg-purple-400/30 selection:text-white">
+    <CreatorShell title="สร้างภาพโปรโมชัน" description="เตรียมภาพอ้างอิง 3 ภาพ ใส่ชื่อร้าน แล้วสร้างโปสเตอร์ด้วย AI" action={<button ref={websiteGuideButtonRef} className="action-link secondary" onClick={openWebsiteGuide} aria-haspopup="dialog" aria-expanded={websiteGuideOpen}>วิธีใช้งาน</button>}>
+      <div className="generator-studio">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
         <div className="absolute -left-40 -top-48 h-[32rem] w-[32rem] rounded-full bg-purple-600/15 blur-[120px]" />
         <div className="absolute -right-48 top-1/3 h-[30rem] w-[30rem] rounded-full bg-fuchsia-500/10 blur-[130px]" />
@@ -781,185 +772,7 @@ export default function Page() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.018)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.018)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" />
       </div>
 
-      <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-        <header className="z-40 mb-10 rounded-[1.75rem] border border-white/[0.09] bg-[#0a0a10]/85 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.38)] backdrop-blur-xl sm:p-4 lg:sticky lg:top-3">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <Link href="/" className="group flex items-center gap-3 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300">
-              <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl border border-purple-400/30 bg-black shadow-[0_8px_26px_rgba(192,132,252,0.28)] transition-transform group-hover:-translate-y-0.5">
-                <Image
-                  src="/lazy-ai-logo.png"
-                  alt=""
-                  fill
-                  sizes="44px"
-                  priority
-                  className="scale-[1.42] object-cover"
-                />
-              </span>
-              <span>
-                <span className="block text-base font-black tracking-[0.08em] text-white">
-                  LAZY-AI.GAME
-                </span>
-                <span className="block text-xs text-white/40">
-                  AI Creative Studio
-                </span>
-              </span>
-            </Link>
-
-            <nav aria-label="เมนูหลัก" className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:w-auto lg:flex-wrap lg:items-center">
-              <button
-                ref={websiteGuideButtonRef}
-                type="button"
-                onClick={openWebsiteGuide}
-                aria-haspopup="dialog"
-                aria-expanded={websiteGuideOpen}
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-purple-300/30 bg-purple-400/10 px-3.5 py-2 text-center text-sm font-bold text-purple-100 transition hover:border-purple-300/70 hover:bg-purple-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300"
-              >
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-purple-200/50 text-xs"
-                >
-                  ?
-                </span>
-                วิธีใช้งานเว็บไซต์
-              </button>
-              <a
-                href="/game-calendar"
-                className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] px-3.5 py-2 text-center text-sm font-bold text-white/70 transition hover:border-purple-300/40 hover:bg-purple-400/10 hover:text-purple-100"
-              >
-                ปฏิทินกิจกรรมเกม
-              </a>
-              <a
-                href="/pricing"
-                className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] px-3.5 py-2 text-center text-sm font-bold text-white/70 transition hover:border-white/25 hover:bg-white/[0.07] hover:text-white"
-              >
-                แพ็กเกจ
-              </a>
-              <a
-                href="/dashboard/history"
-                className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] px-3.5 py-2 text-center text-sm font-bold text-white/70 transition hover:border-white/25 hover:bg-white/[0.07] hover:text-white"
-              >
-                ประวัติภาพ
-              </a>
-              <a
-                href={memberState?.isAdmin ? "/admin" : "/dashboard"}
-                className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] px-3.5 py-2 text-center text-sm font-bold text-white/70 transition hover:border-white/25 hover:bg-white/[0.07] hover:text-white"
-              >
-                {memberState?.isAdmin ? "Admin" : "Dashboard"}
-              </a>
-              {memberState?.isAdmin && (
-                <a
-                  href="/dashboard"
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] px-3.5 py-2 text-center text-sm font-bold text-white/70 transition hover:border-white/25 hover:bg-white/[0.07] hover:text-white"
-                >
-                  Member
-                </a>
-              )}
-
-              {memberState?.user ? (
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="min-h-10 rounded-xl bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-purple-100"
-                >
-                  ออกจากระบบ
-                </button>
-              ) : (
-                <>
-                  <a
-                    href="/sign-in"
-                    className="min-h-10 rounded-xl bg-purple-400 px-4 py-2 text-sm font-black text-[#110719] shadow-[0_8px_20px_rgba(192,132,252,0.18)] transition hover:bg-purple-300"
-                  >
-                    เข้าสู่ระบบ
-                  </a>
-                  <a
-                    href="/sign-up"
-                    className="min-h-10 rounded-xl bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-purple-100"
-                  >
-                    สมัครสมาชิก
-                  </a>
-                </>
-              )}
-            </nav>
-          </div>
-
-          <div className="hidden">
-            {memberLoading ? (
-              <MemberInfoCard
-                label="Member"
-                value="กำลังโหลด..."
-                detail="ตรวจสอบสถานะบัญชี"
-              />
-            ) : !memberState?.databaseConfigured ? (
-              <MemberInfoCard
-                label="Member system"
-                value="กำลังเตรียมเปิด"
-                detail="หน้าแพ็กเกจและบัญชีพร้อมแล้ว เหลือเชื่อมฐานข้อมูล production"
-              />
-            ) : memberState.user ? (
-              <MemberInfoCard
-                label="บัญชี"
-                value={memberState.user.displayName || memberState.user.email}
-                detail={memberState.user.role === "admin" ? "Admin" : "Member"}
-              />
-            ) : (
-              <MemberInfoCard
-                label="บัญชี"
-                value="ยังไม่ได้เข้าสู่ระบบ"
-                detail="เข้าสู่ระบบเพื่อใช้แพ็กเกจและเก็บประวัติภาพ"
-              />
-            )}
-
-            <MemberInfoCard
-              label="แพ็กเกจ"
-              value={memberState?.subscription?.plan.name || "ยังไม่มีแพ็กเกจ"}
-              detail={
-                memberState?.subscription
-                  ? `${memberState.subscription.usedImagesThisPeriod}/${memberState.subscription.plan.monthlyImageLimit} รูปในรอบนี้`
-                  : "เลือก Basic, Pro หรือ Business เพื่อเปิดสิทธิ์ใช้งาน"
-              }
-            />
-
-            <MemberInfoCard
-              label="โควตาคงเหลือ"
-              value={
-                memberState?.subscription
-                  ? `${memberState.subscription.remainingImages} รูป`
-                  : "-"
-              }
-              detail={
-                memberState?.subscription
-                  ? `หมดรอบ ${new Date(
-                      memberState.subscription.currentPeriodEnd
-                    ).toLocaleDateString("th-TH")}`
-                  : "ระบบจะนับเมื่อมี subscription active"
-              }
-            />
-          </div>
-        </header>
-
-        <div className="mx-auto mb-10 max-w-4xl text-center sm:mb-12">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-purple-300/20 bg-purple-400/[0.08] px-4 py-2 text-xs font-bold tracking-wide text-purple-100">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,0.8)]" />
-            AI GAME PROMOTION STUDIO
-          </div>
-
-          <h1 className="text-balance text-[2rem] font-black leading-[1.12] tracking-[-0.035em] text-white [overflow-wrap:anywhere] sm:text-5xl lg:text-6xl">
-            สร้างรูปโปรโมทร้านเติมเกมง่ายๆ
-            <span className="mt-1 block bg-gradient-to-r from-purple-300 via-fuchsia-300 to-purple-400 bg-clip-text text-transparent">
-              ไม่ถึง 3 นาที
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-5 max-w-2xl text-pretty text-sm leading-7 text-white/50 sm:text-base">
-            อัปโหลดภาพหลัก ราคา และสไตล์ร้าน แล้วให้ AI ช่วยสร้างงานโปรโมทที่พร้อมใช้งานบนทุกแพลตฟอร์ม
-          </p>
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs font-medium text-white/55">
-            <span className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5">3 ภาพอ้างอิง</span>
-            <span className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5">6 ขนาดยอดนิยม</span>
-            <span className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5">สูงสุด 5 ผลลัพธ์</span>
-          </div>
-        </div>
+      <section className="studio-promo-body">
 
         {feedback && (
           <StatusMessage
@@ -986,7 +799,7 @@ export default function Page() {
           </StatusMessage>
         )}
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+        <CreatorWorkspace><CreatorSettingsPanel>
           <form
             ref={formRef}
             onSubmit={handleSubmit}
@@ -996,27 +809,12 @@ export default function Page() {
             className="relative min-w-0 overflow-hidden rounded-[2rem] border border-white/[0.09] bg-[#0b0b12]/80 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-sm sm:p-6"
           >
             <div className="pointer-events-none absolute inset-x-16 top-0 h-px bg-gradient-to-r from-transparent via-purple-300/70 to-transparent" />
-            <div className="mb-6 flex items-start gap-3">
-              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-purple-300/25 bg-purple-400/10 text-sm font-black text-purple-200">
-                01
-              </span>
-              <div>
-                <h2 className="text-xl font-black tracking-tight">ตั้งค่าภาพโปรโมท</h2>
-                <p className="mt-1 text-sm leading-6 text-white/40">
-                  เตรียมภาพอ้างอิงและกำหนดรูปแบบงานที่ต้องการ
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-white/[0.07] bg-white/[0.025] p-3 sm:p-4">
+            <div className="generator-form-section">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-black text-white">ภาพอ้างอิง</p>
-                  <p className="mt-1 text-xs text-white/35">อัปโหลดให้ครบ 3 ภาพเพื่อผลลัพธ์ที่แม่นยำ</p>
+                  <p className="text-sm font-semibold text-white">ภาพอ้างอิง</p>
+                  <p className="mt-1 text-xs text-muted">อัปโหลดให้ครบ 3 ภาพเพื่อผลลัพธ์ที่แม่นยำ</p>
                 </div>
-                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[11px] font-bold text-white/45">
-                  STEP 1
-                </span>
               </div>
 
               <div className="grid gap-3">
@@ -1039,7 +837,7 @@ export default function Page() {
                       event.stopPropagation();
                       openDailyImagePicker("image1");
                     }}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-300/30 bg-purple-400/10 px-3 py-2 text-xs font-black text-purple-100 transition hover:border-purple-300/70 hover:bg-purple-400/20 disabled:cursor-not-allowed disabled:opacity-45"
+                    className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-300/30 bg-purple-400/10 px-3 py-2 text-xs font-semibold text-purple-100 transition hover:border-purple-300/70 hover:bg-purple-400/20 disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <span aria-hidden="true">♛</span>
                     รูปรายวัน
@@ -1066,7 +864,7 @@ export default function Page() {
                       event.stopPropagation();
                       openDailyImagePicker("image2");
                     }}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-300/30 bg-purple-400/10 px-3 py-2 text-xs font-black text-purple-100 transition hover:border-purple-300/70 hover:bg-purple-400/20 disabled:cursor-not-allowed disabled:opacity-45"
+                    className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-300/30 bg-purple-400/10 px-3 py-2 text-xs font-semibold text-purple-100 transition hover:border-purple-300/70 hover:bg-purple-400/20 disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <span aria-hidden="true">♛</span>
                     รูปรายวัน
@@ -1088,15 +886,12 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="mt-4 rounded-3xl border border-white/[0.07] bg-white/[0.025] p-4 sm:p-5">
+            <div className="generator-form-section mt-6 border-t border-white/10 pt-6">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-black text-white">รายละเอียดและรูปแบบ</p>
-                  <p className="mt-1 text-xs text-white/35">กำหนดชื่อร้าน ขนาด คุณภาพ และจำนวนภาพ</p>
+                  <p className="text-sm font-semibold text-white">รายละเอียดและรูปแบบ</p>
+                  <p className="mt-1 text-xs text-muted">กำหนดชื่อร้าน ขนาด คุณภาพ และจำนวนภาพ</p>
                 </div>
-                <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[11px] font-bold text-white/45">
-                  STEP 2
-                </span>
               </div>
 
               <div className="space-y-4">
@@ -1110,7 +905,7 @@ export default function Page() {
                 onChange={(event) => setTargetShop(event.target.value)}
               />
 
-              <RadioGroup
+              <SelectField
                 name="aspectRatio"
                 label="ขนาดภาพ"
                 value={aspectRatio}
@@ -1120,6 +915,9 @@ export default function Page() {
                 onValueChange={setAspectRatio}
               />
 
+              <SelectField name="outputCount" label="จำนวนผลลัพธ์" value={String(resultCount)} options={RESULT_COUNT_OPTIONS.map(option => ({ ...option, value: String(option.value) }))} required disabled={busy} onValueChange={value => setResultCount(Number(value) as typeof resultCount)} />
+
+              <details className="advanced-settings"><summary>ตั้งค่าขั้นสูง · โมเดล คุณภาพ และแบรนด์</summary><div className="mt-4 space-y-4">
               <SelectField
                 name="aiModel"
                 label="โมเดล AI"
@@ -1138,17 +936,6 @@ export default function Page() {
                 required
                 disabled={busy}
                 onValueChange={setImageQuality}
-              />
-
-              <RadioGroup
-                name="outputCount"
-                label="จำนวนผลลัพธ์"
-                value={resultCount}
-                options={RESULT_COUNT_OPTIONS}
-                columns={5}
-                required
-                disabled={busy}
-                onValueChange={setResultCount}
               />
 
               <div
@@ -1177,18 +964,18 @@ export default function Page() {
                         ♛
                       </span>
                       <span>LAZYPRO</span>
-                      <span className="rounded-full border border-purple-300/35 bg-purple-400/15 px-2 py-1 text-[11px] font-black uppercase tracking-wide text-purple-100">
+                      <span className="rounded-full border border-purple-300/35 bg-purple-400/15 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-purple-100">
                         เฉพาะแพ็กเกจ 499/999
                       </span>
                     </span>
-                    <span className="mt-1 block text-xs leading-5 text-white/45">
+                    <span className="mt-1 block text-xs leading-5 text-muted">
                       ฟีเจอร์พิเศษสำหรับลูกค้าแพ็กเกจ 499/999
                     </span>
                   </span>
                 </label>
 
                 {specialFeatureLocked ? (
-                  <div className="mt-4 rounded-xl border border-dashed border-white/10 px-4 py-3 text-sm text-white/45">
+                  <div className="mt-4 rounded-xl border border-dashed border-white/10 px-4 py-3 text-sm text-muted">
                     อัปเกรดเป็น Pro 499 หรือ Business 999 เพื่อเปิดตัวเลือกคงแบรนด์ร้านและคำสั่งดีไซน์พิเศษ
                   </div>
                 ) : (
@@ -1228,7 +1015,7 @@ export default function Page() {
                                   <span className="block font-medium text-white/90">
                                     {option.label}
                                   </span>
-                                  <span className="mt-1 block text-white/45">
+                                  <span className="mt-1 block text-muted">
                                     {option.description}
                                   </span>
                                 </span>
@@ -1236,7 +1023,7 @@ export default function Page() {
                             );
                           })}
                         </div>
-                        <p className="mt-2 text-xs text-white/35">
+                        <p className="mt-2 text-xs text-muted">
                           เลือกได้มากกว่า 1 ตัวเลือก ระบบจะรวมคำสั่งทั้งหมดให้ LAZYPRO
                         </p>
                       </fieldset>
@@ -1258,9 +1045,11 @@ export default function Page() {
                   )
                 )}
               </div>
+              </div></details>
               </div>
             </div>
 
+            <CreatorPrimaryAction quota={memberState?.isAdmin ? "บัญชีผู้ดูแลระบบ" : memberState?.subscription ? `เหลือ ${memberState.subscription.remainingImages} ภาพในรอบนี้` : undefined}><p className="text-xs text-muted"> {targetShop || "ยังไม่ได้ใส่ชื่อร้าน"} · {aspectRatio} · {resultCount} ภาพ · คุณภาพ {IMAGE_QUALITY_OPTIONS.find(option => option.value === imageQuality)?.label}</p>
             <Button
               type="submit"
               loading={loading}
@@ -1272,27 +1061,25 @@ export default function Page() {
               สร้างภาพโปรโมท
             </Button>
 
+            </CreatorPrimaryAction>
             {loading && (
               <StatusMessage tone="loading" className="mt-4">
                 กำลังประมวลผลภาพ อาจใช้เวลาประมาณ 30–90 วินาที กรุณาอย่าปิดหน้านี้
               </StatusMessage>
             )}
-          </form>
+          </form></CreatorSettingsPanel>
 
-          <section
+          <CreatorCanvas title="ภาพโปรโมชันของคุณ" busy={busy}><section
             aria-labelledby="result-heading"
             aria-busy={busy}
             className="relative min-w-0 overflow-hidden rounded-[2rem] border border-white/[0.09] bg-[#0b0b12]/80 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-sm sm:p-6"
           >
-            <div className="pointer-events-none absolute inset-x-16 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/60 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-16 top-0 h-px bg-gradient-to-r from-transparent via-fuchsia-300/60 to-transparent" />
             <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
               <div className="flex items-start gap-3">
-                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-400/10 text-sm font-black text-emerald-200">
-                  02
-                </span>
                 <div>
-                  <h2 id="result-heading" className="text-xl font-black tracking-tight">พื้นที่สร้างสรรค์</h2>
-                  <p className="mt-1 text-sm leading-6 text-white/40">
+                  <h2 id="result-heading" className="text-xl font-semibold tracking-tight">ผลลัพธ์ของคุณ</h2>
+                  <p className="mt-1 text-sm leading-6 text-muted">
                     ดู เปรียบเทียบ ดาวน์โหลด และปรับแก้ผลงาน
                   </p>
                 </div>
@@ -1312,7 +1099,7 @@ export default function Page() {
                               : [result],
                         })
                       }
-                      className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-300/40 bg-purple-400/10 px-4 py-2 text-sm font-black text-purple-100 transition hover:border-purple-200 hover:bg-purple-400 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-200"
+                      className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-purple-300/40 bg-purple-400/10 px-4 py-2 text-sm font-semibold text-purple-100 transition hover:border-purple-200 hover:bg-purple-400 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-200"
                     >
                       <span aria-hidden="true">💬</span>
                       ส่งชุดนี้ให้แอดมินช่วยแก้
@@ -1321,7 +1108,7 @@ export default function Page() {
                   <a
                     href={result}
                     download="game-promo.png"
-                    className="inline-flex min-h-10 items-center rounded-xl bg-emerald-400 px-4 py-2 text-sm font-black text-[#04120c] shadow-[0_8px_22px_rgba(52,211,153,0.15)] transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                    className="inline-flex min-h-10 items-center rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(168,85,247,0.2)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                   >
                     ดาวน์โหลดภาพ
                   </a>
@@ -1369,7 +1156,7 @@ export default function Page() {
             )}
 
             <div
-              className={`relative flex ${previewAspectClass[aspectRatio]} items-center justify-center overflow-hidden rounded-3xl border border-white/[0.09] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.055),rgba(0,0,0,0.42)_68%)] shadow-inner`}
+              className={`relative flex promo-artboard items-center justify-center overflow-hidden rounded-3xl border border-white/[0.09] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.055),rgba(0,0,0,0.42)_68%)] shadow-inner`}
             >
               {result ? (
                 <Image
@@ -1380,27 +1167,32 @@ export default function Page() {
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-contain"
                 />
-              ) : loading ? (
-                <div className="px-4 text-center sm:px-8" role="status" aria-live="polite">
-                  <Spinner className="mb-5 h-14 w-14 border-4" />
-
-                  <p className="text-lg font-bold text-white">
-                    AI กำลังสร้างภาพ
-                  </p>
-
-                  <p className="mt-2 text-sm text-white/40">
-                    กำลังจัดวางโครงภาพ ไอเทม ราคา และองค์ประกอบตามภาพอ้างอิง
-                  </p>
-                </div>
               ) : (
-                <div className="max-w-xs px-4 text-center sm:px-8">
-                  <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl border border-white/10 bg-white/[0.045] text-2xl text-purple-200 shadow-[0_12px_32px_rgba(0,0,0,0.25)]" aria-hidden="true">
-                    ✦
+                <div
+                  className="promo-size-preview"
+                  data-wide={previewWidth / previewHeight >= 1.5 || undefined}
+                  style={{
+                    aspectRatio: `${previewWidth} / ${previewHeight}`,
+                    width: `min(86cqw, calc(82cqh * ${previewWidth / previewHeight}))`,
+                  }}
+                >
+                  <div className="promo-size-preview-tag" aria-live="polite">
+                    <span>ตัวอย่างขนาด</span><strong>{aspectRatio}</strong>
                   </div>
-                  <p className="font-bold text-white/70">พื้นที่แสดงภาพโปรโมท</p>
-                  <p className="mt-2 text-sm leading-6 text-white/35">
-                    เมื่อสร้างสำเร็จ ผลลัพธ์ที่เลือกจะแสดงในพื้นที่นี้
-                  </p>
+                  {loading ? (
+                    <div className="promo-size-preview-content" role="status" aria-live="polite">
+                      <Spinner className="mb-3 h-10 w-10 border-4" />
+                      <p className="font-bold text-white">AI กำลังสร้างภาพ</p>
+                      <p>กำลังจัดวางองค์ประกอบตามภาพอ้างอิง</p>
+                    </div>
+                  ) : (
+                    <div className="promo-size-preview-content">
+                      <div className="promo-size-preview-icon" aria-hidden="true">✦</div>
+                      <p className="font-bold text-white/80">พื้นที่แสดงภาพโปรโมท</p>
+                      <p>ผลงานจะปรากฏในกรอบสัดส่วนนี้</p>
+                    </div>
+                  )}
+                  <p className="promo-size-preview-label">{selectedSize.label}</p>
                 </div>
               )}
             </div>
@@ -1438,11 +1230,13 @@ export default function Page() {
               </div>
             )}
 
-            <div className="mt-5 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-4 sm:p-5">
+          </section></CreatorCanvas>
+        </CreatorWorkspace>
+            <div className="studio-recent promo-recent">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-bold">ประวัติภาพ</h3>
-                  <p className="mt-1 text-sm text-white/40">
+                  <h3 className="font-bold">งานล่าสุด</h3>
+                  <p className="mt-1 text-sm text-muted">
                     เก็บล่าสุด {MAX_HISTORY_ITEMS} ภาพในเครื่องนี้
                   </p>
                 </div>
@@ -1459,7 +1253,7 @@ export default function Page() {
               </div>
 
               {history.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="promo-recent-list">
                   {history.map((item, index) => (
                     <div
                       key={item.id}
@@ -1471,7 +1265,7 @@ export default function Page() {
                         className="block w-full text-left"
                         aria-label={`Open history image ${index + 1}`}
                       >
-                        <span className="relative block aspect-square w-full">
+                        <span className="relative block h-24 w-full">
                           <Image
                             src={item.image}
                             alt={`History image ${index + 1}`}
@@ -1484,7 +1278,7 @@ export default function Page() {
                         <span className="block truncate px-2 pt-2 text-xs font-bold text-white/80">
                           {item.shop}
                         </span>
-                        <span className="block px-2 pb-2 text-xs text-white/35">
+                        <span className="block px-2 pb-2 text-xs text-muted">
                           {item.aspectRatio}
                         </span>
                       </button>
@@ -1500,7 +1294,7 @@ export default function Page() {
                         <button
                           type="button"
                           onClick={() => deleteHistoryItem(item.id)}
-                          className="flex-1 border-l border-white/10 px-2 py-2 text-xs font-bold text-white/45 transition hover:bg-white/[0.06] hover:text-red-200"
+                          className="flex-1 border-l border-white/10 px-2 py-2 text-xs font-bold text-muted transition hover:bg-white/[0.06] hover:text-red-200"
                         >
                           ลบ
                         </button>
@@ -1509,13 +1303,12 @@ export default function Page() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-8 text-center text-sm text-white/35">
+                <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-8 text-center text-sm text-muted">
                   ภาพที่สร้างแล้วจะถูกเก็บไว้ตรงนี้
                 </div>
               )}
             </div>
-          </section>
-        </div>
+
       </section>
 
       <VipSupportLauncher
@@ -1544,15 +1337,15 @@ export default function Page() {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="mb-2 inline-flex rounded-full border border-purple-300/25 bg-purple-400/10 px-3 py-1 text-xs font-black text-purple-200">
+                <p className="mb-2 inline-flex rounded-full border border-purple-300/25 bg-purple-400/10 px-3 py-1 text-xs font-semibold text-purple-200">
                   ขั้นตอน {websiteGuideStep + 1} จาก {WEBSITE_GUIDE_STEPS.length}
                 </p>
-                <h2 id="website-guide-title" className="text-2xl font-black sm:text-3xl">
+                <h2 id="website-guide-title" className="text-2xl font-semibold sm:text-3xl">
                   วิธีใช้งานเว็บไซต์
                 </h2>
                 <p
                   id="website-guide-description"
-                  className="mt-2 text-sm leading-6 text-white/55"
+                  className="mt-2 text-sm leading-6 text-muted"
                 >
                   เลื่อนดูวิธีสร้างภาพโปรโมทเกมด้วย AI ทีละขั้นตอน
                 </p>
@@ -1588,13 +1381,13 @@ export default function Page() {
               <WebsiteGuideVisual step={activeWebsiteGuideStep} />
 
               <div className="border-t border-white/10 p-5 sm:p-6">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-purple-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-300">
                   ขั้นตอนที่ {websiteGuideStep + 1}
                 </p>
-                <h3 className="mt-2 text-xl font-black text-white sm:text-2xl">
+                <h3 className="mt-2 text-xl font-semibold text-white sm:text-2xl">
                   {activeWebsiteGuideStep.title}
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-white/55 sm:text-base">
+                <p className="mt-2 text-sm leading-6 text-muted sm:text-base">
                   {activeWebsiteGuideStep.description}
                 </p>
               </div>
@@ -1632,7 +1425,7 @@ export default function Page() {
               <button
                 type="button"
                 onClick={showNextWebsiteGuideStep}
-                className="rounded-2xl bg-purple-400 px-5 py-3 font-black text-black transition hover:bg-purple-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-200"
+                className="rounded-2xl bg-purple-400 px-5 py-3 font-semibold text-black transition hover:bg-purple-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-200"
               >
                 {websiteGuideStep === WEBSITE_GUIDE_STEPS.length - 1
                   ? "เริ่มสร้างภาพ"
@@ -1640,7 +1433,7 @@ export default function Page() {
               </button>
             </div>
 
-            <p className="mt-3 text-center text-xs text-white/35">
+            <p className="mt-3 text-center text-xs text-muted">
               ใช้ปุ่มลูกศรซ้าย–ขวาบนคีย์บอร์ดเพื่อเปลี่ยนขั้นตอนได้
             </p>
           </section>
@@ -1657,14 +1450,14 @@ export default function Page() {
           <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-purple-300/25 bg-[#080808] p-4 shadow-2xl sm:p-6">
             <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-purple-300/25 bg-purple-400/10 px-3 py-1 text-xs font-black text-purple-100">
+                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-purple-300/25 bg-purple-400/10 px-3 py-1 text-xs font-semibold text-purple-100">
                   <span aria-hidden="true">♛</span>
                   LAZYPRO
                 </p>
-                <h2 id="daily-image-picker-title" className="text-2xl font-black">
+                <h2 id="daily-image-picker-title" className="text-2xl font-semibold">
                   เลือกรูปรายวัน
                 </h2>
-                <p className="mt-2 text-sm text-white/45">
+                <p className="mt-2 text-sm text-muted">
                   {DAILY_IMAGE_SLOT_LABELS[dailyPickerSlot]}
                 </p>
               </div>
@@ -1678,13 +1471,13 @@ export default function Page() {
             </div>
 
             {dailyImagesLoading ? (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-10 text-center text-sm text-white/45">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-10 text-center text-sm text-muted">
                 กำลังโหลดรูปรายวัน...
               </div>
             ) : dailyImagesForSlot.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.04] px-4 py-10 text-center">
                 <p className="font-bold text-white/70">ยังไม่มีรูปรายวัน</p>
-                <p className="mt-2 text-sm text-white/40">
+                <p className="mt-2 text-sm text-muted">
                   ให้ admin อัปโหลดรูปสำหรับช่องนี้ในหน้า Admin Dashboard ก่อน
                 </p>
               </div>
@@ -1706,7 +1499,7 @@ export default function Page() {
                     }
                     placeholder="พิมพ์แท็กเกม เช่น ROV, MLBB หรือชื่อรูป"
                     autoComplete="off"
-                    className="min-h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-purple-300/60 focus:ring-4 focus:ring-purple-400/10"
+                    className="min-h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition placeholder:text-muted focus:border-purple-300/60 focus:ring-4 focus:ring-purple-400/10"
                   />
                 </div>
 
@@ -1715,7 +1508,7 @@ export default function Page() {
                     <p className="font-bold text-white/70">
                       ไม่พบรูปของเกมที่ค้นหา
                     </p>
-                    <p className="mt-2 text-sm text-white/40">
+                    <p className="mt-2 text-sm text-muted">
                       ลองตรวจสอบชื่อเกมหรือค้นหาด้วยคำที่สั้นลง
                     </p>
                   </div>
@@ -1747,7 +1540,7 @@ export default function Page() {
                               {image.gameTag}
                             </span>
                           )}
-                          <span className="mt-1 block text-xs text-white/45">
+                          <span className="mt-1 block text-xs text-muted">
                             คลิกเพื่อใช้รูปนี้
                           </span>
                         </span>
@@ -1760,7 +1553,8 @@ export default function Page() {
           </div>
         </div>
       )}
-    </main>
+      </div>
+    </CreatorShell>
   );
 }
 
@@ -1788,15 +1582,15 @@ function WebsiteGuideVisual({ step }: { step: WebsiteGuideStep }) {
         className="flex h-[230px] items-center justify-center bg-[#030303] p-5 sm:h-[390px]"
       >
         <div className="flex w-full max-w-xl items-center gap-5 rounded-3xl border border-dashed border-purple-300/45 bg-purple-400/[0.07] p-5 sm:p-7">
-          <span className="inline-flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white/[0.07] text-4xl text-white/55">
+          <span className="inline-flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white/[0.07] text-4xl text-muted">
             +
           </span>
           <span>
-            <span className="block text-lg font-black text-white">ภาพที่ 3</span>
+            <span className="block text-lg font-semibold text-white">ภาพที่ 3</span>
             <span className="mt-1 block text-sm text-purple-200">
               ภาพที่บ่งบอกสไตล์ร้านของคุณ
             </span>
-            <span className="mt-2 block text-xs text-white/40">
+            <span className="mt-2 block text-xs text-muted">
               PNG, JPG หรือ WEBP · ไม่มีราคาหรือข้อมูลสินค้า
             </span>
           </span>
@@ -1814,12 +1608,12 @@ function WebsiteGuideVisual({ step }: { step: WebsiteGuideStep }) {
       >
         <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-7">
           <p className="font-bold text-white">จำนวนผลลัพธ์ที่ต้องการ</p>
-          <p className="mt-1 text-sm text-white/40">เลือกสร้างได้ตั้งแต่ 1–5 ภาพ</p>
+          <p className="mt-1 text-sm text-muted">เลือกสร้างได้ตั้งแต่ 1–5 ภาพ</p>
           <div className="mt-5 grid grid-cols-5 gap-2 sm:gap-3">
             {[1, 2, 3, 4, 5].map((count) => (
               <span
                 key={count}
-                className={`inline-flex aspect-square items-center justify-center rounded-2xl border text-lg font-black sm:text-xl ${
+                className={`inline-flex aspect-square items-center justify-center rounded-2xl border text-lg font-semibold sm:text-xl ${
                   count === 3
                     ? "border-purple-300 bg-purple-400 text-black"
                     : "border-white/15 bg-black/30 text-white/60"
@@ -1841,7 +1635,7 @@ function WebsiteGuideVisual({ step }: { step: WebsiteGuideStep }) {
       className="flex h-[230px] items-center justify-center bg-[#030303] p-5 sm:h-[390px]"
     >
       <div className="w-full max-w-xl rounded-3xl border border-purple-300/20 bg-purple-400/[0.07] p-5 sm:p-7">
-        <div className="rounded-2xl bg-purple-400 px-5 py-4 text-center text-lg font-black text-black shadow-[0_0_30px_rgba(192,132,252,0.2)]">
+        <div className="rounded-2xl bg-purple-400 px-5 py-4 text-center text-lg font-semibold text-black shadow-[0_0_30px_rgba(192,132,252,0.2)]">
           สร้างภาพโปรโมท 3 ภาพ
         </div>
         <div className="mt-4 flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-black/30 px-4 py-4 text-sm text-white/60">
@@ -1849,24 +1643,6 @@ function WebsiteGuideVisual({ step }: { step: WebsiteGuideStep }) {
           AI กำลังสร้างภาพโปรโมท กรุณารอสักครู่...
         </div>
       </div>
-    </div>
-  );
-}
-
-function MemberInfoCard({
-  label,
-  value,
-  detail,
-}: {
-  label: string;
-  value: string;
-  detail: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-      <p className="text-xs font-bold uppercase text-purple-200/70">{label}</p>
-      <p className="mt-2 truncate text-lg font-black text-white">{value}</p>
-      <p className="mt-1 min-h-10 text-sm leading-5 text-white/40">{detail}</p>
     </div>
   );
 }

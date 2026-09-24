@@ -4,6 +4,7 @@ import { id } from '@/lib/media/model';
 import { deleteAsset, ownAsset } from '@/lib/media/repository';
 import { readMedia } from '@/lib/media/storage';
 import { byteRange,sliceStream } from '@/lib/media/range';
+import { scheduleMediaWork } from '@/lib/media/dispatch';
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) { try {
   const account = await user(req); const asset = await ownAsset(account.id, id((await params).id));
   if (asset.state !== 'ready' || new Date(asset.expires_at).getTime() <= Date.now()) return json({ error: 'ไฟล์ยังไม่พร้อมหรือหมดอายุแล้ว' }, 404);
@@ -15,4 +16,4 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   }
   return new Response(file.stream, { headers: { 'Content-Type': asset.metadata.contentType, 'Content-Length': String(file.size), 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Disposition': `attachment; filename="asset.${asset.pathname.split('.').pop()}"; filename*=UTF-8''${encodeURIComponent(asset.name).replace(/'/g, '%27')}` } });
 } catch (error) { return failure(error); } }
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) { try { const account = await user(req, true); await deleteAsset(account.id, id((await params).id)); return json({ queued: true }, 202); } catch (error) { return failure(error); } }
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) { try { const account = await user(req, true); await deleteAsset(account.id, id((await params).id)); scheduleMediaWork(req); return json({ queued: true }, 202); } catch (error) { return failure(error); } }

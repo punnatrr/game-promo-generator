@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
 import { fitPoster, OUTPUT_RESERVE, parsePlan, type MotionPlan } from './model';
+import { ffmpegBinary } from './ffmpeg';
 const exec = promisify(execFile);
 export async function renderMotion(bytes: Buffer, input: MotionPlan) {
   const plan = parsePlan(input);
@@ -22,7 +23,7 @@ export async function renderMotion(bytes: Buffer, input: MotionPlan) {
     const float = plan.effect === 'float' ? `+6*sin(2*PI*t/${plan.duration})` : '';
     const filters = `[1:v]${highlights.length?highlights.join(','):'null'}[poster];[0:v][poster]overlay=x=(W-w)/2:y=(H-h)/2${float}:shortest=1,format=yuv420p[out]`;
     await writeFile(path.join(dir,'filters.txt'),filters);
-    await exec(process.env.FFMPEG_PATH || 'ffmpeg',[
+    await exec(ffmpegBinary(),[
       '-hide_banner','-loglevel','error','-nostdin','-y','-filter_complex_threads','1',
       '-f','lavfi','-i',`color=c=0x08080e:s=${frame.width}x${frame.height}:r=24:d=${plan.duration}`,
       '-loop','1','-framerate','24','-protocol_whitelist','file','-i','poster.png',

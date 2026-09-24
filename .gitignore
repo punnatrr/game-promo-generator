@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+.codex-remote-attachments/
+s.href)
 
 # debug
 npm-debug.log*

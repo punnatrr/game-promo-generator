@@ -392,15 +392,15 @@ export function GameActivityReviewPanel() {
   return (
     <section
       id="game-activity-review"
-      className="mb-6 rounded-xl border border-cyan-300/20 bg-[#07101d] p-5"
+      className="mb-6 rounded-xl border border-purple-300/20 bg-background p-5"
     >
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-300">
             GAME ACTIVITY BOT · ทุกวัน 07:00 น.
           </p>
-          <h2 className="mt-2 text-2xl font-black">กิจกรรมเกมรอ APPROVED</h2>
-          <p className="mt-1 max-w-3xl text-sm leading-6 text-white/50">
+          <h2 className="mt-2 text-2xl font-semibold">กิจกรรมเกมรอ APPROVED</h2>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">
             อ่านข่าวจากบอท ตรวจ Source และกำหนดวันเริ่มกิจกรรม
             เมื่อกด APPROVED รายการจะไปแสดงในวันที่กำหนดบนปฏิทินสาธารณะ
           </p>
@@ -410,7 +410,7 @@ export function GameActivityReviewPanel() {
             type="button"
             disabled={botWorking}
             onClick={() => void runBot()}
-            className="rounded-lg bg-cyan-300 px-4 py-3 text-sm font-black text-black transition hover:bg-cyan-200 disabled:opacity-40"
+            className="rounded-lg bg-purple-300 px-4 py-3 text-sm font-semibold text-black transition hover:bg-cyan-200 disabled:opacity-40"
           >
             {botWorking ? "บอทกำลังค้นหา..." : "ค้นหากิจกรรมตอนนี้"}
           </button>
@@ -428,7 +428,7 @@ export function GameActivityReviewPanel() {
           </Link>
           <Link
             href="/game-calendar"
-            className="rounded-lg border border-cyan-300/25 px-4 py-3 text-sm font-bold text-cyan-200"
+            className="rounded-lg border border-purple-300/25 px-4 py-3 text-sm font-bold text-purple-200"
           >
             ดูปฏิทิน
           </Link>
@@ -441,13 +441,13 @@ export function GameActivityReviewPanel() {
       >
         <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-200">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-200">
               QUICK OFFICIAL SOCIAL IMPORT
             </p>
-            <h3 className="mt-1 text-lg font-black">
+            <h3 className="mt-1 text-lg font-semibold">
               นำโพสต์กิจกรรมเข้า Dashboard ทันที
             </h3>
-            <p className="mt-1 text-sm text-white/45">
+            <p className="mt-1 text-sm text-muted">
               วางลิงก์และข้อความจากโพสต์ Official แล้วรายการจะเข้าคิวรอตรวจสอบทันที
               โดยไม่ต้องรอ Google index
             </p>
@@ -458,7 +458,7 @@ export function GameActivityReviewPanel() {
         </div>
 
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <label className="grid gap-1 text-xs font-bold text-white/55">
+          <label className="grid gap-1 text-xs font-bold text-muted">
             เกม
             <select
               value={importGameId}
@@ -474,7 +474,7 @@ export function GameActivityReviewPanel() {
               ))}
             </select>
           </label>
-          <label className="grid gap-1 text-xs font-bold text-white/55">
+          <label className="grid gap-1 text-xs font-bold text-muted">
             Source Official
             <select
               value={importSourceId}
@@ -490,7 +490,7 @@ export function GameActivityReviewPanel() {
               ))}
             </select>
           </label>
-          <label className="grid gap-1 text-xs font-bold text-white/55">
+          <label className="grid gap-1 text-xs font-bold text-muted">
             วันที่โพสต์
             <input
               type="datetime-local"
@@ -500,7 +500,7 @@ export function GameActivityReviewPanel() {
               className="min-h-11 rounded-lg border border-white/10 bg-black/50 px-3 text-sm text-white outline-none focus:border-amber-300"
             />
           </label>
-          <label className="grid gap-1 text-xs font-bold text-white/55">
+          <label className="grid gap-1 text-xs font-bold text-muted">
             ประเภทกิจกรรม
             <select
               value={importActivityType}
@@ -517,7 +517,7 @@ export function GameActivityReviewPanel() {
           </label>
         </div>
 
-        <label className="mt-3 grid gap-1 text-xs font-bold text-white/55">
+        <label className="mt-3 grid gap-1 text-xs font-bold text-muted">
           ลิงก์โพสต์ Official
           <input
             type="url"
@@ -528,7 +528,7 @@ export function GameActivityReviewPanel() {
             className="min-h-11 rounded-lg border border-white/10 bg-black/50 px-3 text-sm text-white outline-none focus:border-amber-300"
           />
         </label>
-        <label className="mt-3 grid gap-1 text-xs font-bold text-white/55">
+        <label className="mt-3 grid gap-1 text-xs font-bold text-muted">
           ข้อความโพสต์
           <textarea
             value={importPostText}
@@ -549,7 +549,7 @@ export function GameActivityReviewPanel() {
             !importPostText ||
             !importPublishedAt
           }
-          className="mt-3 rounded-lg bg-amber-300 px-5 py-3 text-sm font-black text-black disabled:cursor-not-allowed disabled:opacity-35"
+          className="mt-3 rounded-lg bg-amber-300 px-5 py-3 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-35"
         >
           {importWorking ? "กำลังนำเข้า..." : "นำเข้าและส่งเข้าคิวตรวจสอบ"}
         </button>
@@ -557,30 +557,30 @@ export function GameActivityReviewPanel() {
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-          <p className="text-xs text-white/45">รอตรวจสอบ</p>
-          <p className="mt-1 text-3xl font-black text-amber-200">
+          <p className="text-xs text-muted">รอตรวจสอบ</p>
+          <p className="mt-1 text-3xl font-semibold text-amber-200">
             {activities.filter((item) =>
               ["DISCOVERED", "REVIEWING"].includes(item.status)
             ).length}
           </p>
         </div>
         <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-          <p className="text-xs text-white/45">เผยแพร่ในปฏิทิน</p>
-          <p className="mt-1 text-3xl font-black text-emerald-200">
+          <p className="text-xs text-muted">เผยแพร่ในปฏิทิน</p>
+          <p className="mt-1 text-3xl font-semibold text-emerald-200">
             {approvedCount}
           </p>
         </div>
         <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-          <p className="text-xs text-white/45">Bot ล่าสุด</p>
-          <p className="mt-2 font-black">
+          <p className="text-xs text-muted">Bot ล่าสุด</p>
+          <p className="mt-2 font-semibold">
             {latestRun?.status || "ยังไม่เคยทำงาน"}
           </p>
-          <p className="mt-1 text-xs text-white/40">
+          <p className="mt-1 text-xs text-muted">
             {latestRun ? formatDate(latestRun.finishedAt) : "-"}
           </p>
         </div>
         <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-          <p className="text-xs text-white/45">ผลรอบล่าสุด</p>
+          <p className="text-xs text-muted">ผลรอบล่าสุด</p>
           <p className="mt-2 text-sm font-bold">
             {latestRun
               ? latestRun.countingVersion >= 2
@@ -617,7 +617,7 @@ export function GameActivityReviewPanel() {
       {message && (
         <p
           aria-live="polite"
-          className="mt-4 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.08] p-3 text-sm text-cyan-100"
+          className="mt-4 rounded-lg border border-purple-300/15 bg-purple-300/[0.08] p-3 text-sm text-purple-100"
         >
           {message}
         </p>
@@ -625,11 +625,11 @@ export function GameActivityReviewPanel() {
 
       <div className="mt-4 grid gap-4">
         {loading ? (
-          <p className="rounded-lg border border-white/10 p-5 text-sm text-white/45">
+          <p className="rounded-lg border border-white/10 p-5 text-sm text-muted">
             กำลังโหลดกิจกรรม...
           </p>
         ) : pending.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/45">
+          <p className="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-muted">
             ไม่มีรายการรอตรวจสอบในเกมที่เลือก
           </p>
         ) : (
@@ -662,13 +662,13 @@ export function GameActivityReviewPanel() {
                     ) : null}
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-cyan-300/10 px-2 py-1 text-xs font-black text-cyan-200">
+                        <span className="rounded-full bg-purple-300/10 px-2 py-1 text-xs font-semibold text-purple-200">
                           {activity.gameName}
                         </span>
-                        <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/55">
+                        <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-muted">
                           {activity.verificationStatus}
                         </span>
-                        <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/55">
+                        <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-muted">
                           {activity.activityType}
                         </span>
                         {isGoogleRedirect && (
@@ -677,13 +677,13 @@ export function GameActivityReviewPanel() {
                           </span>
                         )}
                       </div>
-                      <h3 className="mt-3 text-base font-black leading-6">
+                      <h3 className="mt-3 text-base font-semibold leading-6">
                         {activity.title}
                       </h3>
-                      <p className="mt-2 line-clamp-3 text-sm leading-6 text-white/50">
+                      <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted">
                         {activity.description || "ไม่มีรายละเอียดเพิ่มเติม"}
                       </p>
-                      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/40">
+                      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
                         <span>พบเมื่อ {formatDate(activity.discoveredAt)}</span>
                         <span>
                           ประกาศเมื่อ {formatDate(activity.sourcePublishedAt)}
@@ -692,7 +692,7 @@ export function GameActivityReviewPanel() {
                           href={activity.sourceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-bold text-cyan-300 underline underline-offset-4"
+                          className="font-bold text-purple-300 underline underline-offset-4"
                         >
                           เปิด Source
                         </a>
@@ -701,7 +701,7 @@ export function GameActivityReviewPanel() {
                   </div>
 
                   <div className="grid shrink-0 gap-3 sm:grid-cols-2 xl:w-[520px]">
-                    <label className="grid gap-1 text-xs font-bold text-white/55">
+                    <label className="grid gap-1 text-xs font-bold text-muted">
                       วันเริ่มกิจกรรม *
                       <input
                         type="datetime-local"
@@ -715,10 +715,10 @@ export function GameActivityReviewPanel() {
                             },
                           }))
                         }
-                        className="min-h-11 rounded-lg border border-white/10 bg-black/50 px-3 text-sm text-white outline-none focus:border-cyan-300"
+                        className="min-h-11 rounded-lg border border-white/10 bg-black/50 px-3 text-sm text-white outline-none focus:border-purple-300"
                       />
                     </label>
-                    <label className="grid gap-1 text-xs font-bold text-white/55">
+                    <label className="grid gap-1 text-xs font-bold text-muted">
                       วันสิ้นสุด
                       <input
                         type="datetime-local"
@@ -732,7 +732,7 @@ export function GameActivityReviewPanel() {
                             },
                           }))
                         }
-                        className="min-h-11 rounded-lg border border-white/10 bg-black/50 px-3 text-sm text-white outline-none focus:border-cyan-300"
+                        className="min-h-11 rounded-lg border border-white/10 bg-black/50 px-3 text-sm text-white outline-none focus:border-purple-300"
                       />
                     </label>
                     <button
@@ -743,7 +743,7 @@ export function GameActivityReviewPanel() {
                       onClick={() =>
                         void updateStatus(activity, "APPROVED")
                       }
-                      className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-black text-black disabled:cursor-not-allowed disabled:opacity-35"
+                      className="rounded-lg bg-emerald-300 px-4 py-3 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-35"
                     >
                       {workingId === activity.id
                         ? "กำลังบันทึก..."
@@ -768,28 +768,28 @@ export function GameActivityReviewPanel() {
       <div className="mt-8 border-t border-white/10 pt-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">
               PUBLISHED CALENDAR
             </p>
-            <h3 className="mt-1 text-xl font-black">
+            <h3 className="mt-1 text-xl font-semibold">
               กิจกรรมที่อยู่ในปฏิทิน
             </h3>
-            <p className="mt-1 text-sm text-white/45">
+            <p className="mt-1 text-sm text-muted">
               การลบจะนำโพสต์ออกจากปฏิทินสาธารณะและลบข้อมูลกิจกรรมที่เกี่ยวข้อง
             </p>
           </div>
-          <span className="rounded-full bg-emerald-300/10 px-3 py-1.5 text-sm font-black text-emerald-200">
+          <span className="rounded-full bg-emerald-300/10 px-3 py-1.5 text-sm font-semibold text-emerald-200">
             {calendarActivities.length} รายการ
           </span>
         </div>
 
         <div className="mt-4 grid gap-3">
           {loading ? (
-            <p className="rounded-lg border border-white/10 p-5 text-sm text-white/45">
+            <p className="rounded-lg border border-white/10 p-5 text-sm text-muted">
               กำลังโหลดกิจกรรมในปฏิทิน...
             </p>
           ) : calendarActivities.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-white/45">
+            <p className="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-muted">
               ไม่มีกิจกรรมในปฏิทินสำหรับเกมที่เลือก
             </p>
           ) : (
@@ -816,17 +816,17 @@ export function GameActivityReviewPanel() {
                     ) : null}
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-cyan-300/10 px-2 py-1 text-xs font-black text-cyan-200">
+                        <span className="rounded-full bg-purple-300/10 px-2 py-1 text-xs font-semibold text-purple-200">
                           {activity.gameName}
                         </span>
-                        <span className="rounded-full bg-emerald-300/10 px-2 py-1 text-xs font-black text-emerald-200">
+                        <span className="rounded-full bg-emerald-300/10 px-2 py-1 text-xs font-semibold text-emerald-200">
                           {activity.status}
                         </span>
                       </div>
-                      <h4 className="mt-2 font-black leading-6">
+                      <h4 className="mt-2 font-semibold leading-6">
                         {activity.title}
                       </h4>
-                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/45">
+                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
                         <span>
                           เริ่ม {formatDate(
                             activity.startDate ||
@@ -840,7 +840,7 @@ export function GameActivityReviewPanel() {
                           href={activity.sourceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-bold text-cyan-300 underline underline-offset-4"
+                          className="font-bold text-purple-300 underline underline-offset-4"
                         >
                           เปิด Source
                         </a>
@@ -857,7 +857,7 @@ export function GameActivityReviewPanel() {
                           onClick={() =>
                             void deleteCalendarActivity(activity)
                           }
-                          className="rounded-lg bg-red-400 px-4 py-2.5 text-sm font-black text-black disabled:opacity-35"
+                          className="rounded-lg bg-red-400 px-4 py-2.5 text-sm font-semibold text-black disabled:opacity-35"
                         >
                           {isWorking ? "กำลังลบ..." : "ยืนยันลบถาวร"}
                         </button>

@@ -1,6 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { PageHeader, Skeleton, EmptyState } from "@/app/components/ui/workspace";
+import { StatusMessage } from "@/app/components/ui/status-message";
+import { SelectField } from "@/app/components/ui/select-field";
 import { useEffect, useState } from "react";
 import { readHistory } from "@/app/lib/history-storage";
 
@@ -27,6 +31,8 @@ type HistoryState = {
 export default function GenerationHistoryPage() {
   const [state, setState] = useState<HistoryState | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actionFilter, setActionFilter] = useState("all");
+  const [sort, setSort] = useState("newest");
 
   useEffect(() => {
     let active = true;
@@ -50,7 +56,7 @@ export default function GenerationHistoryPage() {
         const res = await fetch("/api/history/me");
         const data = await res.json();
         if (active) {
-          const serverHistory: HistoryItem[] = data.history || [];
+          const serverHistory: HistoryItem[] = res.ok ? data.history || [] : [];
           const serverImageUrls = new Set(
             serverHistory.map((item) => item.imageUrl)
           );
@@ -65,6 +71,7 @@ export default function GenerationHistoryPage() {
 
           setState({
             ...data,
+            error: res.ok ? undefined : "โหลดประวัติในบัญชีไม่สำเร็จ กรุณาเข้าสู่ระบบหรือลองใหม่",
             history: mergedHistory,
           });
         }
@@ -89,47 +96,22 @@ export default function GenerationHistoryPage() {
     };
   }, []);
 
+  const visibleHistory = (state?.history || []).filter(item => actionFilter === "all" || item.action === actionFilter).toSorted((a,b) => (Date.parse(b.createdAt) - Date.parse(a.createdAt)) * (sort === "newest" ? 1 : -1));
   return (
-    <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
+    <main className="min-h-screen bg-background px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="mb-3 text-sm font-medium text-purple-300">
-              LAZY-AI.GAME Member
-            </p>
-            <h1 className="text-4xl font-black tracking-tight">
-              ประวัติภาพที่เจน
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/45">
-              เก็บรูปที่สร้างสำเร็จไว้ตามระยะเวลาของแพ็กเกจ เพื่อกลับมาดูหรือดาวน์โหลดซ้ำได้
-            </p>
-          </div>
-
-          <a
-            href="/dashboard"
-            className="rounded-2xl border border-white/10 px-5 py-3 text-center font-bold text-white/70 transition hover:border-white/30 hover:text-white"
-          >
-            กลับ Dashboard
-          </a>
-        </div>
-
+        <PageHeader title="ประวัติภาพ" description="ดูและดาวน์โหลดภาพที่สร้างไว้ อายุไฟล์ขึ้นอยู่กับแพ็กเกจของคุณ" action={<Link href="/" className="action-link">＋ สร้างภาพใหม่</Link>} />
+        <div className="filter-toolbar"><SelectField label="ประเภทงาน" value={actionFilter} onValueChange={setActionFilter} options={[{ value: "all", label: "ทุกประเภท" }, { value: "generate", label: "สร้างภาพใหม่" }, { value: "refine", label: "แก้ไขภาพ" }]} /><SelectField label="เรียงตาม" value={sort} onValueChange={setSort} options={[{ value: "newest", label: "ใหม่ที่สุดก่อน" }, { value: "oldest", label: "เก่าที่สุดก่อน" }]} /></div>
+        {state?.error && <StatusMessage tone="error" className="mb-5">โหลดประวัติในบัญชีไม่สำเร็จ ภาพที่เก็บในเบราว์เซอร์นี้ยังแสดงได้ <a className="underline" href="/sign-in">เข้าสู่ระบบ</a> หรือ <button onClick={() => window.location.reload()} className="underline">ลองโหลดอีกครั้ง</button></StatusMessage>}
         {loading ? (
-          <Notice title="กำลังโหลดประวัติ..." />
-        ) : !state?.databaseConfigured ? (
-          <Notice
-            title="ยังไม่ได้เชื่อมต่อฐานข้อมูล"
-            body="ตั้งค่า DATABASE_URL และรัน schema ก่อนใช้งานประวัติภาพบน server"
-          />
-        ) : state.error ? (
-          <Notice title={state.error} body="ลองเข้าสู่ระบบใหม่ หรือกลับมาดูอีกครั้ง" />
-        ) : state.history.length === 0 ? (
-          <Notice
-            title="ยังไม่มีประวัติภาพ"
-            body="เมื่อสมาชิก generate หรือ refine ภาพสำเร็จ ระบบจะเก็บรูปไว้ที่หน้านี้"
-          />
+          <Skeleton label="กำลังโหลดประวัติภาพ" />
+        ) : !state?.history.length ? (
+          <EmptyState title="ยังไม่มีภาพที่แสดงได้" description="เริ่มสร้างภาพแรก หรือเข้าสู่ระบบเพื่อดูผลงานที่บันทึกในบัญชี" href="/" action="สร้างภาพโปรโมชัน" />
+        ) : visibleHistory.length === 0 ? (
+          <EmptyState title="ไม่พบงานประเภทนี้" description="ลองแสดงทุกประเภทเพื่อดูภาพที่คุณเคยสร้าง" action="ล้างตัวกรอง" onAction={() => setActionFilter("all")} />
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {state.history.map((item, index) => (
+            {visibleHistory.map((item, index) => (
               <article
                 key={item.id}
                 className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04]"
@@ -147,14 +129,14 @@ export default function GenerationHistoryPage() {
 
                 <div className="p-5">
                   <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <Badge>{item.action}</Badge>
-                    {item.localOnly && <Badge>local</Badge>}
+                    <Badge>{item.action === "generate" ? "สร้างใหม่" : "แก้ไขภาพ"}</Badge>
+                    {item.localOnly && <Badge>บนอุปกรณ์นี้</Badge>}
                     <Badge>{item.aspectRatio}</Badge>
                     <Badge>{item.imageQuality}</Badge>
                   </div>
 
-                  <dl className="mt-4 space-y-2 text-sm text-white/55">
-                    <Meta label="Model" value={item.model} />
+                  <dl className="mt-4 space-y-2 text-sm text-muted">
+                    <Meta label="โมเดล" value={item.model} />
                     <Meta
                       label="สร้างเมื่อ"
                       value={formatThaiDateTime(item.createdAt)}
@@ -163,7 +145,7 @@ export default function GenerationHistoryPage() {
                       label="เก็บถึง"
                       value={
                         item.localOnly
-                          ? "เก็บใน browser นี้"
+                          ? "เก็บในเบราว์เซอร์นี้"
                           : formatThaiDate(item.expiresAt)
                       }
                     />
@@ -186,15 +168,6 @@ export default function GenerationHistoryPage() {
   );
 }
 
-function Notice({ title, body }: { title: string; body?: string }) {
-  return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <h2 className="text-xl font-bold">{title}</h2>
-      {body && <p className="mt-2 text-sm text-white/50">{body}</p>}
-    </div>
-  );
-}
-
 function Badge({ children }: { children: string }) {
   return (
     <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 font-bold text-white/65">
@@ -206,7 +179,7 @@ function Badge({ children }: { children: string }) {
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <dt className="text-white/35">{label}</dt>
+      <dt className="text-muted">{label}</dt>
       <dd className="truncate text-right font-medium text-white/70">{value}</dd>
     </div>
   );

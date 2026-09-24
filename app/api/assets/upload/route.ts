@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { body, failure, json, user } from '@/lib/media/http';
 import { enqueueAsset, uploadPermission } from '@/lib/media/repository';
+import { scheduleMediaWork } from '@/lib/media/dispatch';
 export async function POST(req: NextRequest) {
   try {
     const input = await body(req) as HandleUploadBody;
@@ -16,6 +17,7 @@ export async function POST(req: NextRequest) {
         const data = JSON.parse(tokenPayload || '{}');
         if (data.pathname !== blob.pathname) throw new Error('Path mismatch');
         await enqueueAsset(data.id, data.pathname);
+        scheduleMediaWork(req);
       },
     });
     return json(response);

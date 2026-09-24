@@ -130,7 +130,7 @@ function eventDateKey(event: CalendarEvent) {
 
 function gameTone(slug: string) {
   const tones = [
-    "border-cyan-300/30 bg-cyan-300/10 text-cyan-100",
+    "border-purple-300/30 bg-purple-300/10 text-purple-100",
     "border-violet-300/30 bg-violet-300/10 text-violet-100",
     "border-emerald-300/30 bg-emerald-300/10 text-emerald-100",
     "border-amber-300/30 bg-amber-300/10 text-amber-100",
@@ -145,10 +145,10 @@ function StatusBadge({ status }: { status: CalendarStatus }) {
   const warning = ["UNCONFIRMED", "REVIEW", "POSTPONED"].includes(status);
   return (
     <span
-      className={`rounded-full px-2.5 py-1 text-[10px] font-black ${
+      className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${
         warning
           ? "bg-amber-300/15 text-amber-200"
-          : "bg-cyan-300/12 text-cyan-100"
+          : "bg-purple-300/12 text-purple-100"
       }`}
     >
       {CALENDAR_STATUS_LABELS_TH[status]}
@@ -179,7 +179,7 @@ function GameIcon({
           className="object-cover"
         />
       ) : (
-        <span className="grid h-full w-full place-items-center text-xs font-black">
+        <span className="grid h-full w-full place-items-center text-xs font-semibold">
           {event.gameName.slice(0, 1)}
         </span>
       )}
@@ -205,11 +205,11 @@ function EventLink({
         <GameIcon event={event} size={compact ? 28 : 38} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[10px] font-black uppercase tracking-wide opacity-70">
+            <span className="text-[10px] font-semibold uppercase tracking-wide opacity-70">
               {event.gameName}
             </span>
             {event.isOfficial ? (
-              <span className="rounded-full bg-emerald-300/15 px-2 py-0.5 text-[9px] font-black text-emerald-200">
+              <span className="rounded-full bg-emerald-300/15 px-2 py-0.5 text-[9px] font-semibold text-emerald-200">
                 OFFICIAL
               </span>
             ) : null}
@@ -243,8 +243,8 @@ function EmptyCalendar() {
   return (
     <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.025] px-6 py-16 text-center">
       <p className="text-4xl">◌</p>
-      <h2 className="mt-4 text-xl font-black">ยังไม่มีกิจกรรมที่เผยแพร่</h2>
-      <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-400">
+      <h2 className="mt-4 text-xl font-semibold">ยังไม่มีกิจกรรมที่เผยแพร่</h2>
+      <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted">
         ระบบจะแสดงเฉพาะข้อมูลที่มี Source URL และผ่านการตรวจสอบจาก Admin
         ข่าวที่ยังไม่ยืนยันจะไม่ถูกแสดงเป็นข้อเท็จจริง
       </p>
@@ -269,7 +269,7 @@ function MonthView({
   return (
     <div className="overflow-x-auto">
       <div className="min-w-[860px]">
-        <div className="grid grid-cols-7 border-b border-white/10 text-center text-xs font-black text-slate-500">
+        <div className="grid grid-cols-7 border-b border-white/10 text-center text-xs font-semibold text-muted">
           {["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."].map((day) => (
             <div key={day} className="py-3">
               {day}
@@ -290,8 +290,8 @@ function MonthView({
                 }`}
               >
                 <div
-                  className={`mb-2 grid h-7 w-7 place-items-center rounded-full text-xs font-black ${
-                    today ? "bg-cyan-300 text-[#06101c]" : "text-slate-400"
+                  className={`mb-2 grid h-7 w-7 place-items-center rounded-full text-xs font-semibold ${
+                    today ? "bg-purple-300 text-[#06101c]" : "text-muted"
                   }`}
                 >
                   {Number(key.slice(-2))}
@@ -301,7 +301,7 @@ function MonthView({
                     <EventLink key={event.id} event={event} compact />
                   ))}
                   {items.length > 3 ? (
-                    <p className="px-1 text-[10px] font-bold text-cyan-200">
+                    <p className="px-1 text-[10px] font-bold text-purple-200">
                       +{items.length - 3} กิจกรรม
                     </p>
                   ) : null}
@@ -333,7 +333,7 @@ function WeekView({
             key={key}
             className="min-h-64 rounded-2xl border border-white/10 bg-white/[0.025] p-3"
           >
-            <p className="text-xs font-black text-cyan-200">
+            <p className="text-xs font-semibold text-purple-200">
               {formatDate(`${key}T12:00:00+07:00`, {
                 weekday: "short",
                 day: "numeric",
@@ -345,7 +345,7 @@ function WeekView({
                 <EventLink key={event.id} event={event} compact />
               ))}
               {items.length === 0 ? (
-                <p className="py-8 text-center text-xs text-slate-600">
+                <p className="py-8 text-center text-xs text-muted">
                   ไม่มีรายการ
                 </p>
               ) : null}
@@ -369,7 +369,7 @@ function AgendaView({ events }: { events: CalendarEvent[] }) {
       {Array.from(groups.entries()).map(([key, items]) => (
         <section key={key} className="grid gap-3 md:grid-cols-[180px_1fr]">
           <div>
-            <p className="sticky top-4 text-sm font-black text-cyan-200">
+            <p className="sticky top-4 text-sm font-semibold text-purple-200">
               {formatDate(`${key}T12:00:00+07:00`, {
                 weekday: "long",
                 day: "numeric",
@@ -402,12 +402,12 @@ function ListView({ events }: { events: CalendarEvent[] }) {
 function TimelineView({ events }: { events: CalendarEvent[] }) {
   if (events.length === 0) return <EmptyCalendar />;
   return (
-    <div className="relative space-y-4 before:absolute before:bottom-3 before:left-[17px] before:top-3 before:w-px before:bg-cyan-300/25">
+    <div className="relative space-y-4 before:absolute before:bottom-3 before:left-[17px] before:top-3 before:w-px before:bg-purple-300/25">
       {events.map((event) => (
         <div key={event.id} className="relative grid grid-cols-[36px_1fr] gap-4">
-          <span className="z-10 mt-3 h-9 w-9 rounded-full border-4 border-[#07111e] bg-cyan-300" />
+          <span className="z-10 mt-3 h-9 w-9 rounded-full border-4 border-[#07111e] bg-purple-300" />
           <div>
-            <p className="mb-2 text-xs font-black text-slate-500">
+            <p className="mb-2 text-xs font-semibold text-muted">
               {formatDate(event.startDate || event.announcementDate)}
               {event.endDate ? ` – ${formatDate(event.endDate)}` : ""}
             </p>
@@ -430,8 +430,8 @@ function Metric({
 }) {
   return (
     <article className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-      <p className="text-2xl font-black text-white">{value}</p>
-      <p className="mt-1 text-xs font-bold text-slate-400">{label}</p>
+      <p className="text-2xl font-semibold text-white">{value}</p>
+      <p className="mt-1 text-xs font-bold text-muted">{label}</p>
       {children}
     </article>
   );
@@ -596,17 +596,17 @@ export function GameCalendar() {
   }
 
   return (
-    <main className="min-h-screen bg-[#06101c] text-white">
-      <header className="border-b border-white/10 bg-[#081827]/95">
+    <main className="min-h-screen bg-background text-white">
+      <header className="border-b border-white/10 bg-surface/95">
         <div className="mx-auto flex max-w-[1600px] flex-col gap-5 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-300">
-              LAZY TOPUP · VERIFIED GAME SIGNALS
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-purple-300">
+              LAZY-AI.GAME · วางแผนคอนเทนต์
             </p>
-            <h1 className="mt-1 text-3xl font-black tracking-tight">
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight">
               ปฏิทินกิจกรรมเกม
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-muted">
               เวลาไทย · แสดงเฉพาะกิจกรรมที่ผ่านการตรวจสอบก่อนเผยแพร่
             </p>
           </div>
@@ -640,8 +640,9 @@ export function GameCalendar() {
               onKeyDown={(event) => {
                 if (event.key === "Enter") updateUrl({ q: query });
               }}
-              placeholder="ค้นหากิจกรรม ตัวละคร สกิน ไอเทม หรือแพตช์"
-              className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm outline-none placeholder:text-slate-600 focus:border-cyan-300/50"
+              aria-label="ค้นหากิจกรรมเกม"
+              placeholder="ค้นหากิจกรรม ตัวละคร สกิน หรือแพตช์"
+              className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm outline-none placeholder:text-muted focus:border-purple-300/50"
             />
             <select
               aria-label="กรองตามเกม"
@@ -650,7 +651,7 @@ export function GameCalendar() {
                 setGame(event.target.value);
                 updateUrl({ game: event.target.value });
               }}
-              className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm"
+              className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm"
             >
               <option value="">ทุกเกม</option>
               {games.map((item) => (
@@ -666,7 +667,7 @@ export function GameCalendar() {
                 setCategory(event.target.value);
                 updateUrl({ category: event.target.value });
               }}
-              className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm"
+              className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm"
             >
               <option value="">ทุกประเภท</option>
               {CALENDAR_CATEGORIES.map((item) => (
@@ -682,7 +683,7 @@ export function GameCalendar() {
                 setStatus(event.target.value);
                 updateUrl({ status: event.target.value });
               }}
-              className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm"
+              className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm"
             >
               <option value="">ทุกสถานะ</option>
               {CALENDAR_STATUSES.map((item) => (
@@ -691,7 +692,7 @@ export function GameCalendar() {
                 </option>
               ))}
             </select>
-            <label className="flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-[#07111e] px-3 text-xs font-bold text-slate-300">
+            <label className="flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-surface px-3 text-xs font-bold text-slate-300">
               <input
                 type="checkbox"
                 checked={officialOnly}
@@ -701,11 +702,11 @@ export function GameCalendar() {
                 }}
                 className="accent-cyan-300"
               />
-              Official เท่านั้น
+              แหล่งทางการเท่านั้น
             </label>
           </div>
           <details className="mt-3 border-t border-white/10 pt-3">
-            <summary className="cursor-pointer text-xs font-black text-cyan-200">
+            <summary className="cursor-pointer text-xs font-semibold text-purple-200">
               ตัวกรองเพิ่มเติม
             </summary>
             <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -716,7 +717,7 @@ export function GameCalendar() {
                   setRegion(event.target.value);
                   updateUrl({ region: event.target.value });
                 }}
-                className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm"
+                className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm"
               >
                 <option value="">ทุกภูมิภาค</option>
                 {["TH", "SEA", "Global", "Japan", "Korea", "China"].map(
@@ -734,7 +735,7 @@ export function GameCalendar() {
                   setServer(event.target.value);
                   updateUrl({ server: event.target.value });
                 }}
-                className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm"
+                className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm"
               >
                 <option value="">ทุกเซิร์ฟเวอร์</option>
                 {["ALL", "Global", "SEA", "Thailand", "Japan", "Korea", "China"].map(
@@ -752,8 +753,8 @@ export function GameCalendar() {
                 value={minImportance}
                 onChange={(event) => setMinImportance(event.target.value)}
                 onBlur={() => updateUrl({ minImportance })}
-                placeholder="Importance ขั้นต่ำ 0–100"
-                className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm outline-none placeholder:text-slate-600"
+                aria-label="ความสำคัญขั้นต่ำ 0–100" placeholder="ความสำคัญขั้นต่ำ 0–100"
+                className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm outline-none placeholder:text-muted"
               />
               <input
                 type="number"
@@ -762,8 +763,8 @@ export function GameCalendar() {
                 value={minOpportunity}
                 onChange={(event) => setMinOpportunity(event.target.value)}
                 onBlur={() => updateUrl({ minOpportunity })}
-                placeholder="Opportunity ขั้นต่ำ 0–100"
-                className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm outline-none placeholder:text-slate-600"
+                aria-label="โอกาสทำคอนเทนต์ขั้นต่ำ 0–100" placeholder="โอกาสทำคอนเทนต์ขั้นต่ำ 0–100"
+                className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm outline-none placeholder:text-muted"
               />
               <select
                 aria-label="ตัวกรองช่วงเวลา"
@@ -772,7 +773,7 @@ export function GameCalendar() {
                   setQuickFilter(event.target.value);
                   updateUrl({ quick: event.target.value });
                 }}
-                className="min-h-11 rounded-xl border border-white/10 bg-[#07111e] px-3 text-sm"
+                className="min-h-11 rounded-xl border border-white/10 bg-surface px-3 text-sm"
               >
                 <option value="">ทุกช่วงเวลา</option>
                 <option value="today">ข่าวใหม่วันนี้</option>
@@ -781,7 +782,7 @@ export function GameCalendar() {
                 <option value="ending">กำลังจะหมดใน 3 วัน</option>
                 <option value="unconfirmed">ยังไม่ได้รับการยืนยัน</option>
               </select>
-              <label className="flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-[#07111e] px-3 text-xs font-bold text-slate-300">
+              <label className="flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-surface px-3 text-xs font-bold text-slate-300">
                 <input
                   type="checkbox"
                   checked={communityTrend}
@@ -791,7 +792,7 @@ export function GameCalendar() {
                   }}
                   className="accent-cyan-300"
                 />
-                Community Trend
+                กระแสจากชุมชน
               </label>
               <button
                 type="button"
@@ -811,7 +812,7 @@ export function GameCalendar() {
                     communityTrend: false,
                   });
                 }}
-                className="min-h-11 rounded-xl border border-white/10 px-3 text-xs font-black text-slate-400"
+                className="min-h-11 rounded-xl border border-white/10 px-3 text-xs font-semibold text-muted"
               >
                 ล้างตัวกรองเพิ่มเติม
               </button>
@@ -819,18 +820,19 @@ export function GameCalendar() {
           </details>
         </section>
 
-        <section className="mt-5 overflow-hidden rounded-3xl border border-white/10 bg-[#091522]">
+        <section className="mt-5 overflow-hidden rounded-3xl border border-white/10 bg-surface">
           <div className="flex flex-col gap-3 border-b border-white/10 p-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap gap-1">
               {VIEWS.map((item) => (
                 <button
                   key={item.value}
                   type="button"
+                  aria-pressed={view === item.value}
                   onClick={() => changeView(item.value)}
-                  className={`rounded-xl px-3.5 py-2.5 text-xs font-black ${
+                  className={`rounded-xl px-3.5 py-2.5 text-xs font-semibold ${
                     view === item.value
-                      ? "bg-cyan-300 text-[#06101c]"
-                      : "text-slate-400 hover:bg-white/[0.06]"
+                      ? "bg-purple-300 text-[#06101c]"
+                      : "text-muted hover:bg-white/[0.06]"
                   }`}
                 >
                   {item.label}
@@ -849,7 +851,7 @@ export function GameCalendar() {
               <button
                 type="button"
                 onClick={resetToday}
-                className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-black"
+                className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold"
               >
                 วันนี้
               </button>
@@ -861,7 +863,7 @@ export function GameCalendar() {
               >
                 ›
               </button>
-              <p className="ml-2 min-w-36 text-right text-sm font-black text-cyan-100">
+              <p className="ml-2 min-w-36 text-right text-sm font-semibold text-purple-100">
                 {view === "month" ? formatMonth(anchor) : formatDate(anchor)}
               </p>
             </div>
@@ -875,7 +877,7 @@ export function GameCalendar() {
 
           <div className="p-3 sm:p-5">
             {loading ? (
-              <div className="py-20 text-center text-sm text-slate-500">
+              <div className="py-20 text-center text-sm text-muted">
                 กำลังโหลดกิจกรรม...
               </div>
             ) : view === "month" ? (
@@ -892,7 +894,7 @@ export function GameCalendar() {
           </div>
         </section>
 
-        <footer className="py-6 text-center text-xs text-slate-600">
+        <footer className="py-6 text-center text-xs text-muted">
           ตรวจสอบล่าสุดตามเวลาที่ระบุในแต่ละกิจกรรม · ทุกเวลาแสดงเป็น Asia/Bangkok
         </footer>
       </div>

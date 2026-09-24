@@ -39,12 +39,12 @@ export function TextField({
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
         className={cn(
-          "w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition placeholder:text-white/25 focus:border-white/50 focus-visible:ring-2 focus-visible:ring-purple-400/60 disabled:cursor-not-allowed disabled:opacity-55",
+          "ui-field w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none transition placeholder:text-muted focus:border-white/50 focus-visible:ring-2 focus-visible:ring-purple-400/60 disabled:cursor-not-allowed disabled:opacity-55",
           error && "border-red-400/70 focus:border-red-400 focus-visible:ring-red-400/40",
           className
         )}
       />
-      {hint && <p id={descriptionId} className="mt-1.5 text-xs text-white/45">{hint}</p>}
+      {hint && <p id={descriptionId} className="mt-1.5 text-xs text-muted">{hint}</p>}
       {error && <p id={errorId} className="mt-1.5 text-sm text-red-300">{error}</p>}
     </div>
   );
